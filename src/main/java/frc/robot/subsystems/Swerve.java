@@ -32,7 +32,7 @@ public class Swerve extends SubsystemBase {
     this.rlModule = rlModule;
     this.rrModule = rrModule;
     kinematics = new SwerveDriveKinematics(
-        frModule.motorMeters,
+        flModule.motorMeters,
         frModule.motorMeters,
         rlModule.motorMeters,
         rrModule.motorMeters

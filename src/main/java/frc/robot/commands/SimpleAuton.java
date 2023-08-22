@@ -32,7 +32,7 @@ public class SimpleAuton extends CommandBase {
   public void execute() {
     timer.restart();
     
-    if (!timer.hasElapsed(3)) swerveSubsystem.updateModules(new ChassisSpeeds(1, 1, 1));
+    if (!timer.hasElapsed(3)) swerveSubsystem.updateModules(new ChassisSpeeds(1, 0, 0));
     else swerveSubsystem.stop();
   }
 

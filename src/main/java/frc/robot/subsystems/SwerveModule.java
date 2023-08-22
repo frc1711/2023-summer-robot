@@ -23,10 +23,9 @@ public class SwerveModule extends SubsystemBase {
   CANSparkMax driveMotor, steerMotor;
 
   Translation2d motorMeters;
-
   PIDController steerPID = new PIDController(.01, 0, 0);
 
-  double unoptimizedRotation, optimizedRotation, encoderOffset, encoderValue;
+  double unoptimizedRotation, optimizedRotation, encoderOffset, encoderValue, steerSpeed, driveSpeed;
 
   private CANSparkMax initializeMotor(int motorID) {
     CANSparkMax motor = new CANSparkMax(motorID, MotorType.kBrushless);
@@ -42,6 +41,7 @@ public class SwerveModule extends SubsystemBase {
     encoder = new CANCoder(encoderID);
     driveMotor = initializeMotor(driveMotorID);
     steerMotor = initializeMotor(steerMotorID);
+    steerPID.enableContinuousInput(-180, 180);
     this.motorMeters = motorMeters;
   }
 
@@ -69,7 +69,9 @@ public class SwerveModule extends SubsystemBase {
     SwerveModuleState optimizedState = SwerveModuleState.optimize(desiredState, getEncoderRotation());
     optimizedRotation = optimizedState.angle.getDegrees();
     double steerSpeed = steerPID.calculate(getEncoderRotation().getDegrees(), optimizedState.angle.getDegrees()); 
+    this.steerSpeed = steerSpeed;
     steerMotor.set(steerSpeed);
+    driveSpeed = optimizedState.speedMetersPerSecond;
     driveMotor.setVoltage(metersPerSecondToVoltage(optimizedState.speedMetersPerSecond));
   }
   
@@ -88,5 +90,7 @@ public class SwerveModule extends SubsystemBase {
     builder.addDoubleProperty("unop-rotation", () -> unoptimizedRotation, null);
     builder.addDoubleProperty("op-rotation", () -> optimizedRotation, null);
     builder.addDoubleProperty("actual-rotation", () -> getEncoderRotation().getDegrees(), null);
+    builder.addDoubleProperty("steer-Speed", () -> steerSpeed, null);
+    builder.addDoubleProperty("drive-Speed", () -> driveSpeed, null);
   }
 }

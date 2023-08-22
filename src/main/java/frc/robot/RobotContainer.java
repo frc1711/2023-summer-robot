@@ -19,7 +19,6 @@ public class RobotContainer {
   
   private final Swerve swerveSubsystem;
   private final DriveCommand driveCommand;
-  private final SimpleAuton autonDrive;
   private final SwerveModule flModule, frModule, rlModule, rrModule;
   private final Translation2d flModuleTranslation, frModuleTranslation, rlModuleTranslation, rrModuleTranslation;
   private XboxController driverController;
@@ -60,8 +59,6 @@ public class RobotContainer {
       () -> driverController.getAButton(), 
       () -> driverController.getXButton());
 
-    autonDrive = new SimpleAuton(swerveSubsystem);
-
     swerveSubsystem.setDefaultCommand(driveCommand);
   }
 
@@ -74,6 +71,6 @@ public class RobotContainer {
   }
 
   public Command getAutonomousCommand() {
-    return autonDrive;
+    return new SimpleAuton(swerveSubsystem);
   }
 }
