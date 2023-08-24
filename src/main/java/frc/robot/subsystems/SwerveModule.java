@@ -25,7 +25,7 @@ public class SwerveModule extends SubsystemBase {
   Translation2d motorMeters;
   PIDController steerPID = new PIDController(.01, 0, 0);
 
-  double unoptimizedRotation, optimizedRotation, encoderOffset, encoderValue, steerSpeed, driveSpeed, driveVoltage;
+  double unoptimizedRotation, optimizedRotation, encoderOffset, encoderValue, steerSpeed, driveSpeed, drivePercent;
 
   private CANSparkMax initializeMotor(int motorID) {
     CANSparkMax motor = new CANSparkMax(motorID, MotorType.kBrushless);
@@ -55,10 +55,9 @@ public class SwerveModule extends SubsystemBase {
   /** Uses the average RPM of the motor, along with the circumference of the wheel, 
    * to calculate an approximate voltage value when given a speed in meters per second 
    */
-  private double metersPerSecondToVoltage (double metersPerSecond) {
-    double rotationsPerSecond = metersPerSecond / .1;
-     return rotationsPerSecond / (5500 / 60.); 
-     //TODO: fix this garbage fire
+  private double maxSpeed = (5500 / 60.) * .1;
+  private double metersPerSecondToPercentage (double metersPerSecond) {
+    return metersPerSecond / maxSpeed;
   }
 
   /**Sets the encoderOffset to the current value of the CANcoder. This value is 
@@ -91,8 +90,8 @@ public class SwerveModule extends SubsystemBase {
     this.steerSpeed = steerSpeed;
     steerMotor.set(steerSpeed);
     driveSpeed = optimizedState.speedMetersPerSecond;
-    driveMotor.setVoltage(metersPerSecondToVoltage(optimizedState.speedMetersPerSecond));
-    driveVoltage = metersPerSecondToVoltage(optimizedState.speedMetersPerSecond);
+    driveMotor.set(metersPerSecondToPercentage(optimizedState.speedMetersPerSecond));
+    drivePercent = metersPerSecondToPercentage(optimizedState.speedMetersPerSecond);
   }
   
   public void stop () {
@@ -112,6 +111,6 @@ public class SwerveModule extends SubsystemBase {
     builder.addDoubleProperty("actual-rotation", () -> getEncoderRotation().getDegrees(), null);
     builder.addDoubleProperty("steer-Speed", () -> steerSpeed, null);
     builder.addDoubleProperty("drive-Speed", () -> driveSpeed, null);
-    builder.addDoubleProperty("drive-Voltage", () -> driveVoltage, null);
+    builder.addDoubleProperty("drive-Voltage", () -> drivePercent, null);
   }
 }
