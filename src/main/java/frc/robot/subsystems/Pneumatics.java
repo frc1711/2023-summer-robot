@@ -4,35 +4,44 @@
 
 package frc.robot.subsystems;
 
+import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.PneumaticsControlModule;
-import edu.wpi.first.wpilibj.Solenoid;
+import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Pneumatics extends SubsystemBase {
   
-  Solenoid rightSolenoid, leftSolenoid;
+  DoubleSolenoid solenoid;
 
   PneumaticsControlModule PCM;
 
+  /**Creates a new Pneumatics subsystem with a PCM and two solenoids */
   public Pneumatics(PneumaticsControlModule PCM) {
     this.PCM = PCM;
 
-    rightSolenoid = PCM.makeSolenoid(0);
-    leftSolenoid = PCM.makeSolenoid(0);
+    solenoid = PCM.makeDoubleSolenoid(0, 0); //TODO: Find channel values
   }
 
+  /**Runs the toggle() method on both solenoids.*/
   public void toggleSolenoid () {
-    rightSolenoid.toggle();
-    leftSolenoid.toggle();
+    solenoid.toggle();
   }
 
-  public void enableSubsystem() {
+  /**Enables the subsystem. Returns true if the compressor was enabled, false if not. 
+   * Note: compressor would only not be enabled if it already was.*/
+  public boolean enableSubsystem() {
+    if (solenoid.get() == DoubleSolenoid.Value.kOff) solenoid.set(Value.kReverse);
+    if (!PCM.getCompressor()) {
     PCM.enableCompressorDigital();
+    return true;
+    }
+    else return false;
   }
 
+  /**Sets both solenoids to "off", then disables the compressor. */
   public void disableSubsystem () {
-    if (rightSolenoid.get()) rightSolenoid.toggle();
-    if (leftSolenoid.get()) leftSolenoid.toggle();
+    solenoid.set(Value.kReverse); //TODO: Find which channel extends/retracts to determine which direction is undeployed
+    solenoid.set(Value.kOff);
     PCM.disableCompressor();
   }
 

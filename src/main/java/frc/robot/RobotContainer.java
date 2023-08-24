@@ -62,10 +62,12 @@ public class RobotContainer {
     swerveSubsystem.setDefaultCommand(driveCommand);
   }
 
+  /**Creates a new sendable field in the Analysis Tab of ShuffleBoard */
   public static void putSendable (String name, Sendable sendable) {
     Shuffleboard.getTab("Analysis Tab").add(name, sendable);
   }
 
+  /**Creates a new sendable command in the Analysis Tab of ShuffleBoard */
   public static void putCommand (String name, CommandBase command, boolean canRunWhileDisabled) {
     putSendable(name, command.withName(name).ignoringDisable(canRunWhileDisabled));
   }

@@ -18,31 +18,29 @@ public class SimpleAuton extends CommandBase {
     this.swerveSubsystem = swerveSubsystem;
     this.timer = new Timer();
     addRequirements(swerveSubsystem);
-    // Use addRequirements() here to declare subsystem dependencies.
   }
 
-  // Called when the command is initially scheduled.
   @Override
   public void initialize() {
+    /**Restarts the timer which is used to run the auton cycle. */
+    timer.restart();
     swerveSubsystem.stop();
   }
 
-  // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    timer.restart();
     
+    /**Checks if 3 seconds have passed since the timer has been 
+     * reset. If not, run the updateModules() method to move the robot*/
     if (!timer.hasElapsed(3)) swerveSubsystem.updateModules(new ChassisSpeeds(1, 0, 0));
     else swerveSubsystem.stop();
   }
 
-  // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
     swerveSubsystem.stop();
   }
 
-  // Returns true when the command should end.
   @Override
   public boolean isFinished() {
     return false;

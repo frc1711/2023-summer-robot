@@ -25,7 +25,7 @@ public class SwerveModule extends SubsystemBase {
   Translation2d motorMeters;
   PIDController steerPID = new PIDController(.01, 0, 0);
 
-  double unoptimizedRotation, optimizedRotation, encoderOffset, encoderValue, steerSpeed, driveSpeed;
+  double unoptimizedRotation, optimizedRotation, encoderOffset, encoderValue, steerSpeed, driveSpeed, driveVoltage;
 
   private CANSparkMax initializeMotor(int motorID) {
     CANSparkMax motor = new CANSparkMax(motorID, MotorType.kBrushless);
@@ -42,6 +42,7 @@ public class SwerveModule extends SubsystemBase {
     driveMotor = initializeMotor(driveMotorID);
     steerMotor = initializeMotor(steerMotorID);
     steerPID.enableContinuousInput(-180, 180);
+    steerPID.setTolerance(10); //TODO: decide on a better position tolerance
     this.motorMeters = motorMeters;
   }
 
@@ -51,19 +52,37 @@ public class SwerveModule extends SubsystemBase {
   //   return rotationsPerSecond * wheelCircumferenceMeters;
   // }
 
+  /** Uses the average RPM of the motor, along with the circumference of the wheel, 
+   * to calculate an approximate voltage value when given a speed in meters per second 
+   */
   private double metersPerSecondToVoltage (double metersPerSecond) {
     double rotationsPerSecond = metersPerSecond / .1;
      return rotationsPerSecond / (5500 / 60.); 
+     //TODO: fix this garbage fire
   }
 
+  /**Sets the encoderOffset to the current value of the CANcoder. This value is 
+   * later used to set a new zero position for the encoder. */
   public void resetEncoder () {
     encoderOffset = encoder.getAbsolutePosition();
   } 
 
+  double finalAngle, unregulatedAngle;
+  /**Uses the encoder offset, which is set using the resetEncoders() method, 
+   * to determine the current position of the CANcoder */
   public Rotation2d getEncoderRotation () {
-    return Rotation2d.fromDegrees(encoder.getAbsolutePosition() - encoderOffset);
+    finalAngle = 180;
+    unregulatedAngle = encoder.getAbsolutePosition() - encoderOffset;
+    if (unregulatedAngle < 0) {
+      finalAngle += unregulatedAngle;
+      return Rotation2d.fromDegrees(finalAngle);
+    }
+    else return Rotation2d.fromDegrees((encoder.getAbsolutePosition() - encoderOffset) - 180);
   }
 
+  /**Takes in a SwerveModuleState, then uses a PID controller to calculate 
+   * approximate values for the steerSpeed and the metersPerSecondToVoltage() 
+   * method to calculate the driveVoltage. WIP*/
   public void update (SwerveModuleState desiredState) {
     unoptimizedRotation = desiredState.angle.getDegrees();
     SwerveModuleState optimizedState = SwerveModuleState.optimize(desiredState, getEncoderRotation());
@@ -73,6 +92,7 @@ public class SwerveModule extends SubsystemBase {
     steerMotor.set(steerSpeed);
     driveSpeed = optimizedState.speedMetersPerSecond;
     driveMotor.setVoltage(metersPerSecondToVoltage(optimizedState.speedMetersPerSecond));
+    driveVoltage = metersPerSecondToVoltage(optimizedState.speedMetersPerSecond);
   }
   
   public void stop () {
@@ -92,5 +112,6 @@ public class SwerveModule extends SubsystemBase {
     builder.addDoubleProperty("actual-rotation", () -> getEncoderRotation().getDegrees(), null);
     builder.addDoubleProperty("steer-Speed", () -> steerSpeed, null);
     builder.addDoubleProperty("drive-Speed", () -> driveSpeed, null);
+    builder.addDoubleProperty("drive-Voltage", () -> driveVoltage, null);
   }
 }

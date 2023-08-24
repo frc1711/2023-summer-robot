@@ -31,6 +31,8 @@ public class IntakeCommand extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
+    /**If the BooleanSupplier returns a true value, run the toggleSolenoid()
+     method in the pneumaticsSubsystem */
     if (pneumaticsToggle.getAsBoolean()) pneumaticsSubsystem.toggleSolenoid();
   }
 

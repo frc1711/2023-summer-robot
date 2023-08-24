@@ -38,14 +38,17 @@ public class Swerve extends SubsystemBase {
         rrModule.motorMeters
     );
 
+    /**Create a new sendable field for each module*/
     RobotContainer.putSendable("fl-Module", flModule);
     RobotContainer.putSendable("fr-Module", frModule);
     RobotContainer.putSendable("rl-Module", rlModule);
     RobotContainer.putSendable("rr-Module", rrModule); 
 
+    /**Create a new sendable command to reset the encoders */
     RobotContainer.putCommand("Reset Encoders", new InstantCommand(this::resetEncoders, this), true);
   }
 
+  /**Runs the stop() method on each module */
   public void stop () {
     flModule.stop();
     frModule.stop();
@@ -53,6 +56,7 @@ public class Swerve extends SubsystemBase {
     rrModule.stop();
   }
 
+  /**Runs the resetEncoder() method on each module */
   public void resetEncoders() {
     flModule.resetEncoder();
     frModule.resetEncoder();
@@ -60,6 +64,7 @@ public class Swerve extends SubsystemBase {
     rrModule.resetEncoder();
   }
 
+  /**Updates each module using the reverse kinematics feature from SwerveDriveKinematics */
   public void updateModules (ChassisSpeeds desiredVelocity) {
     SwerveModuleState[] moduleStates = kinematics.toSwerveModuleStates(desiredVelocity);
     flModule.update(moduleStates[0]);
