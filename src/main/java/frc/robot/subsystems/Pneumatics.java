@@ -27,10 +27,14 @@ public class Pneumatics extends SubsystemBase {
     solenoid.toggle();
   }
 
+  public void changeState (Value state) {
+    if (solenoid.get() != state && solenoid.get() != Value.kOff) solenoid.set(state);
+  }
+
   /**Enables the subsystem. Returns true if the compressor was enabled, false if not. 
    * Note: compressor would only not be enabled if it already was.*/
   public boolean enableSubsystem() {
-    if (solenoid.get() == DoubleSolenoid.Value.kOff) solenoid.set(Value.kReverse);
+    if (solenoid.get() == Value.kOff || solenoid.get() == Value.kForward) solenoid.set(Value.kReverse);
     if (!PCM.getCompressor()) {
     PCM.enableCompressorDigital();
     return true;

@@ -46,12 +46,6 @@ public class SwerveModule extends SubsystemBase {
     this.motorMeters = motorMeters;
   }
 
-  // private double voltageToMPS (double voltageRatio) {
-  //   double rotationsPerSecond = (5500 / 60.) * voltageRatio;
-  //   double wheelCircumferenceMeters = .1;
-  //   return rotationsPerSecond * wheelCircumferenceMeters;
-  // }
-
   /** Uses the average RPM of the motor, along with the circumference of the wheel, 
    * to calculate an approximate voltage value when given a speed in meters per second 
    */
