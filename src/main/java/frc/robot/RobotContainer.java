@@ -27,10 +27,10 @@ public class RobotContainer {
 
     driverController = new XboxController(0);
 
-    flModuleTranslation = new Translation2d(-.43, .41);
-    frModuleTranslation = new Translation2d(.43, .41);
-    rlModuleTranslation = new Translation2d(-.43, -.41);
-    rrModuleTranslation = new Translation2d(.43, -.41);
+    flModuleTranslation = new Translation2d(.43, .41);
+    frModuleTranslation = new Translation2d(.43, -.41);
+    rlModuleTranslation = new Translation2d(-.43, .41);
+    rrModuleTranslation = new Translation2d(-.43, -.41);
 
     flModule = new SwerveModule(
       IDMaps.flSteerMotorID, 

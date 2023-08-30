@@ -52,7 +52,7 @@ public class DriveCommand extends CommandBase {
     if (Math.abs(xSpeed.getAsDouble()) > .1 || Math.abs(ySpeed.getAsDouble()) > .1 || Math.abs(thetaSpeed.getAsDouble()) > .1) {
       chassisSpeeds = new ChassisSpeeds(
         xSpeed.getAsDouble() * speedMultiplier, 
-        ySpeed.getAsDouble() * speedMultiplier, 
+        - ySpeed.getAsDouble() * speedMultiplier, //TODO: make sure negative is the proper fix
         thetaSpeed.getAsDouble() * speedMultiplier);
       swerveSubsystem.updateModules(chassisSpeeds);
     }
