@@ -4,6 +4,8 @@
 
 package frc.robot.subsystems;
 
+import com.kauailabs.navx.frc.AHRS;
+
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
@@ -19,18 +21,22 @@ public class Swerve extends SubsystemBase {
     rlModule,
     rrModule;
 
+  private AHRS gyro;
+
   private SwerveDriveKinematics kinematics;
 
   public Swerve(
     SwerveModule flModule,
     SwerveModule frModule,
     SwerveModule rlModule,
-    SwerveModule rrModule
+    SwerveModule rrModule,
+    AHRS gyro
   ) {
     this.flModule = flModule;
     this.frModule = frModule;
     this.rlModule = rlModule;
     this.rrModule = rrModule;
+    this.gyro = gyro;
     kinematics = new SwerveDriveKinematics(
         flModule.motorMeters,
         frModule.motorMeters,
@@ -62,6 +68,19 @@ public class Swerve extends SubsystemBase {
     frModule.resetEncoder();
     rlModule.resetEncoder();
     rrModule.resetEncoder();
+  }
+
+  public void resetGyro() {
+    gyro.reset();
+  }
+
+  public void updateModulesFieldRelative (ChassisSpeeds desiredVelocity) {
+    ChassisSpeeds.fromFieldRelativeSpeeds(desiredVelocity, gyro.getRotation2d());
+    SwerveModuleState[] moduleStates = kinematics.toSwerveModuleStates(desiredVelocity);
+    flModule.update(moduleStates[0]);
+    frModule.update(moduleStates[1]);
+    rlModule.update(moduleStates[2]);
+    rrModule.update(moduleStates[3]);
   }
 
   /**Updates each module using the reverse kinematics feature from SwerveDriveKinematics */

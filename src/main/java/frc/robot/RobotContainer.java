@@ -8,6 +8,9 @@ import frc.robot.commands.DriveCommand;
 import frc.robot.commands.SimpleAuton;
 import frc.robot.subsystems.Swerve;
 import frc.robot.subsystems.SwerveModule;
+
+import com.kauailabs.navx.frc.AHRS;
+
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.util.sendable.Sendable;
 import edu.wpi.first.wpilibj.XboxController;
@@ -18,6 +21,7 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 public class RobotContainer {
   
   private final Swerve swerveSubsystem;
+  private final AHRS gyro;
   private final DriveCommand driveCommand;
   private final SwerveModule flModule, frModule, rlModule, rrModule;
   private final Translation2d flModuleTranslation, frModuleTranslation, rlModuleTranslation, rrModuleTranslation;
@@ -31,6 +35,7 @@ public class RobotContainer {
     frModuleTranslation = new Translation2d(.43, -.41);
     rlModuleTranslation = new Translation2d(-.43, .41);
     rrModuleTranslation = new Translation2d(-.43, -.41);
+    
 
     flModule = new SwerveModule(
       IDMaps.flSteerMotorID, 
@@ -48,16 +53,19 @@ public class RobotContainer {
       IDMaps.rrSteerMotorID, 
       IDMaps.rrDriveMotorID, 
       IDMaps.rrEncoderID, rrModuleTranslation);
+    
+    gyro = new AHRS();
 
-    swerveSubsystem = new Swerve(flModule, frModule, rlModule, rrModule);
+    swerveSubsystem = new Swerve(flModule, frModule, rlModule, rrModule, gyro);
 
     driveCommand = new DriveCommand(
       swerveSubsystem, 
-      () -> driverController.getLeftX(), 
       () -> driverController.getLeftY(), 
+      () -> driverController.getLeftX(), 
       () -> driverController.getRightX(), 
-      () -> driverController.getAButton(), 
-      () -> driverController.getXButton());
+      () -> driverController.getAButton(),
+      () -> driverController.getXButtonPressed(),
+      () -> driverController.getYButtonPressed());
 
     swerveSubsystem.setDefaultCommand(driveCommand);
   }

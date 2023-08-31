@@ -25,7 +25,6 @@ public class IntakeCommand extends CommandBase {
   public IntakeCommand(Pneumatics pneumaticsSubsystem, Spinner spinnerSubsystem, BooleanSupplier intakeToggle) {
     this.pneumaticsSubsystem = pneumaticsSubsystem;
     this.spinnerSubsystem = spinnerSubsystem;
-    this.pneumaticsToggle = pneumaticsToggle;
     addRequirements(pneumaticsSubsystem);
   }
 

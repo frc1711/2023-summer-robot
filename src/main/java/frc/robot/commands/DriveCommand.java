@@ -17,7 +17,7 @@ public class DriveCommand extends CommandBase {
 
   DoubleSupplier xSpeed, ySpeed, thetaSpeed;
 
-  BooleanSupplier slowMode, resetEncoders;
+  BooleanSupplier slowMode, toggleFieldRelative, resetGyro;
 
   public DriveCommand(
     Swerve swerveSubsystem,
@@ -25,14 +25,16 @@ public class DriveCommand extends CommandBase {
     DoubleSupplier ySpeed,
     DoubleSupplier thetaSpeed,
     BooleanSupplier slowMode,
-    BooleanSupplier resetEncoders
+    BooleanSupplier toggleFieldRelative,
+    BooleanSupplier resetGyro
   ) {
     this.swerveSubsystem = swerveSubsystem;
     this.xSpeed = xSpeed;
     this.ySpeed = ySpeed;
     this.thetaSpeed = thetaSpeed;
     this.slowMode = slowMode;
-    this.resetEncoders = resetEncoders;
+    this.toggleFieldRelative = toggleFieldRelative;
+    this.resetGyro = resetGyro;
 
     addRequirements(swerveSubsystem);
   }
@@ -45,16 +47,21 @@ public class DriveCommand extends CommandBase {
 
   double speedMultiplier;
   ChassisSpeeds chassisSpeeds;
+  boolean isFieldRelative;
   @Override
   public void execute() {
     if (slowMode.getAsBoolean()) speedMultiplier = .5;
     else if (speedMultiplier != 1) speedMultiplier = 1;
+    if (resetGyro.getAsBoolean()) swerveSubsystem.resetGyro();
     if (Math.abs(xSpeed.getAsDouble()) > .1 || Math.abs(ySpeed.getAsDouble()) > .1 || Math.abs(thetaSpeed.getAsDouble()) > .1) {
       chassisSpeeds = new ChassisSpeeds(
         xSpeed.getAsDouble() * speedMultiplier, 
-        - ySpeed.getAsDouble() * speedMultiplier, //TODO: make sure negative is the proper fix
+        - ySpeed.getAsDouble() * speedMultiplier,
         thetaSpeed.getAsDouble() * speedMultiplier);
-      swerveSubsystem.updateModules(chassisSpeeds);
+      if (toggleFieldRelative.getAsBoolean() && isFieldRelative) isFieldRelative = false;
+      else if (toggleFieldRelative.getAsBoolean() && !isFieldRelative) isFieldRelative = true;
+      if (isFieldRelative) swerveSubsystem.updateModulesFieldRelative(chassisSpeeds);
+      else if (!isFieldRelative) swerveSubsystem.updateModules(chassisSpeeds);
     }
     else swerveSubsystem.stop();
   }

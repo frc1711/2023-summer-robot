@@ -42,7 +42,6 @@ public class SwerveModule extends SubsystemBase {
     driveMotor = initializeMotor(driveMotorID);
     steerMotor = initializeMotor(steerMotorID);
     steerPID.enableContinuousInput(-180, 180);
-    steerPID.setTolerance(10); //TODO: decide on a better position tolerance
     this.motorMeters = motorMeters;
   }
 
@@ -64,7 +63,7 @@ public class SwerveModule extends SubsystemBase {
   /**Uses the encoder offset, which is set using the resetEncoders() method, 
    * to determine the current position of the CANcoder */
   public Rotation2d getEncoderRotation () {
-    finalAngle = 180;
+    finalAngle = -180;
     unregulatedAngle = encoder.getAbsolutePosition() - encoderOffset;
     if (unregulatedAngle < 0) {
       finalAngle += unregulatedAngle;
