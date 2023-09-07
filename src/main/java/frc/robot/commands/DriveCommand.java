@@ -53,13 +53,13 @@ public class DriveCommand extends CommandBase {
     if (slowMode.getAsBoolean()) speedMultiplier = .5;
     else if (speedMultiplier != 1) speedMultiplier = 1;
     if (resetGyro.getAsBoolean()) swerveSubsystem.resetGyro();
+    if (toggleFieldRelative.getAsBoolean() && !isFieldRelative) isFieldRelative = true;
+    else if (toggleFieldRelative.getAsBoolean() && isFieldRelative) isFieldRelative = false;
     if (Math.abs(xSpeed.getAsDouble()) > .1 || Math.abs(ySpeed.getAsDouble()) > .1 || Math.abs(thetaSpeed.getAsDouble()) > .1) {
       chassisSpeeds = new ChassisSpeeds(
         xSpeed.getAsDouble() * speedMultiplier, 
         ySpeed.getAsDouble() * speedMultiplier,
         thetaSpeed.getAsDouble() * speedMultiplier);
-      if (toggleFieldRelative.getAsBoolean() && isFieldRelative) isFieldRelative = false;
-      else if (toggleFieldRelative.getAsBoolean() && !isFieldRelative) isFieldRelative = true;
       if (isFieldRelative) swerveSubsystem.updateModulesFieldRelative(chassisSpeeds);
       else if (!isFieldRelative) swerveSubsystem.updateModules(chassisSpeeds);
     }
