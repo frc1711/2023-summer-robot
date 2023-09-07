@@ -48,7 +48,7 @@ public class SwerveModule extends SubsystemBase {
   /** Uses the average RPM of the motor, along with the circumference of the wheel, 
    * to calculate an approximate voltage value when given a speed in meters per second 
    */
-  private double maxSpeed = ((5500 / 60.) * .1) / 2;
+  private double maxSpeed = ((5500 / 60.) * .1) / 2.5;
   private double metersPerSecondToPercentage (double metersPerSecond) {
     return metersPerSecond / maxSpeed;
   }
