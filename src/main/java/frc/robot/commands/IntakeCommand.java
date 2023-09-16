@@ -11,23 +11,27 @@ import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.Pneumatics;
 import frc.robot.subsystems.Spinner;
+import frc.robot.subsystems.Spinner.Node;
 
 public class IntakeCommand extends CommandBase {
   Pneumatics pneumaticsSubsystem;
 
   Spinner spinnerSubsystem;
 
-  BooleanSupplier runIntake, runIntakeReleased, reverseButton, runSpinner;
+  BooleanSupplier runIntake, runIntakeReleased, shootLow, shootMid, shootHigh, runSpinner;
 
   Timer timer;
 
-  public IntakeCommand(Pneumatics pneumaticsSubsystem, Spinner spinnerSubsystem, BooleanSupplier runIntake, BooleanSupplier runIntakeReleased, BooleanSupplier reverseButton, BooleanSupplier runSpinner) {
+  public IntakeCommand(Pneumatics pneumaticsSubsystem, Spinner spinnerSubsystem, BooleanSupplier runIntake, BooleanSupplier runIntakeReleased, BooleanSupplier shootLow, BooleanSupplier shootMid, BooleanSupplier shootHigh, BooleanSupplier runSpinner) {
     this.pneumaticsSubsystem = pneumaticsSubsystem;
     this.spinnerSubsystem = spinnerSubsystem;
     this.runIntake = runIntake;
     this.runIntakeReleased = runIntakeReleased;
-    this.reverseButton = reverseButton;
+    this.shootLow = shootLow;
+    this.shootMid = shootMid;
+    this.shootHigh = shootHigh;
     this.runSpinner = runSpinner;
+
     timer = new Timer();
     addRequirements(pneumaticsSubsystem, spinnerSubsystem);
   }
@@ -40,22 +44,25 @@ public class IntakeCommand extends CommandBase {
     spinnerSubsystem.stop();
   }
 
-  // Called every time the scheduler runs while the command is scheduled.
+  public Node node;
   @Override
   public void execute() {
     /**If the BooleanSupplier returns a true value, run the toggleSolenoid()
      method in the pneumaticsSubsystem */
+      if (shootLow.getAsBoolean()) node = Node.LOW;
+      else if (shootMid.getAsBoolean()) node = Node.MID;
+      else if (shootHigh.getAsBoolean()) node = Node.HIGH;
      
       if (runIntake.getAsBoolean()) {
         pneumaticsSubsystem.changeState(Value.kForward);
-        spinnerSubsystem.runSpinner(reverseButton.getAsBoolean());
+        spinnerSubsystem.runSpinner(node);
       }
       else if (runIntakeReleased.getAsBoolean()) {
         pneumaticsSubsystem.changeState(Value.kReverse);
         spinnerSubsystem.stop();
       }
       else if (runSpinner.getAsBoolean()) {
-        spinnerSubsystem.runSpinner(reverseButton.getAsBoolean());
+        spinnerSubsystem.runSpinner(node);
       }
 
       else if (!runSpinner.getAsBoolean()) {

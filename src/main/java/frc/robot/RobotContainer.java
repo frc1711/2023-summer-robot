@@ -81,7 +81,9 @@ public class RobotContainer {
       spinnerSubsystem, 
       () -> driverController.getLeftBumperPressed(),
       () -> driverController.getLeftBumperReleased(),
-      () -> driverController.getBButton(),
+      () -> driverController.getPOV() == 0,
+      () -> driverController.getPOV() == 90,
+      () -> driverController.getPOV() == 180,
       () -> driverController.getRightBumper());
 
     swerveSubsystem.setDefaultCommand(driveCommand);

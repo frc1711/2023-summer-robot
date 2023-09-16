@@ -21,9 +21,17 @@ public class Spinner extends SubsystemBase {
     rightSpinnerMotor.setIdleMode(IdleMode.kBrake);
   }
 
-  int reverseMultiplier;
-  public void runSpinner (boolean reverse) {
-    if (reverse) reverseMultiplier = -2;
+  public enum Node {
+    LOW,
+    MID,
+    HIGH;
+  }
+
+  double reverseMultiplier;
+  public void runSpinner (Node node) {
+    if (node == Node.HIGH) reverseMultiplier = -2;
+    if (node == Node.MID) reverseMultiplier = -1.5;
+    if (node == Node.LOW) reverseMultiplier = -1;
     else reverseMultiplier = 1;
     leftSpinnerMotor.set(.5 * reverseMultiplier); //TODO: Run testing to determine optimal speed
     rightSpinnerMotor.set(.5 * reverseMultiplier);
