@@ -8,6 +8,7 @@ import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.Swerve;
 
@@ -15,9 +16,11 @@ public class DriveCommand extends CommandBase {
   
   Swerve swerveSubsystem;
 
+  Timer timer;
+
   DoubleSupplier xSpeed, ySpeed, thetaSpeed;
 
-  BooleanSupplier slowMode, toggleFieldRelative, resetGyro;
+  BooleanSupplier slowMode, resetEncoders, resetGyro, turnAround, xMode;
 
   public DriveCommand(
     Swerve swerveSubsystem,
@@ -25,16 +28,20 @@ public class DriveCommand extends CommandBase {
     DoubleSupplier ySpeed,
     DoubleSupplier thetaSpeed,
     BooleanSupplier slowMode,
-    BooleanSupplier toggleFieldRelative,
-    BooleanSupplier resetGyro
+    BooleanSupplier resetGyro,
+    BooleanSupplier turnAround,
+    BooleanSupplier xMode
   ) {
     this.swerveSubsystem = swerveSubsystem;
     this.xSpeed = xSpeed;
     this.ySpeed = ySpeed;
     this.thetaSpeed = thetaSpeed;
     this.slowMode = slowMode;
-    this.toggleFieldRelative = toggleFieldRelative;
     this.resetGyro = resetGyro;
+    this.turnAround = turnAround;
+    this.xMode = xMode;
+
+    timer = new Timer();
 
     addRequirements(swerveSubsystem);
   }
@@ -43,27 +50,61 @@ public class DriveCommand extends CommandBase {
   @Override
   public void initialize() {
     swerveSubsystem.stop();
+    timer.start();
   }
 
-  double speedMultiplier;
-  ChassisSpeeds chassisSpeeds;
-  boolean isFieldRelative;
+  double speedMultiplier, oneEighty;
+  boolean wasOneEighty;
   @Override
   public void execute() {
-    if (slowMode.getAsBoolean()) speedMultiplier = .5;
-    else if (speedMultiplier != 1) speedMultiplier = 1;
-    if (resetGyro.getAsBoolean()) swerveSubsystem.resetGyro();
-    if (toggleFieldRelative.getAsBoolean() && !isFieldRelative) isFieldRelative = true;
-    else if (toggleFieldRelative.getAsBoolean() && isFieldRelative) isFieldRelative = false;
-    if (Math.abs(xSpeed.getAsDouble()) > .1 || Math.abs(ySpeed.getAsDouble()) > .1 || Math.abs(thetaSpeed.getAsDouble()) > .1) {
-      chassisSpeeds = new ChassisSpeeds(
-        xSpeed.getAsDouble() * speedMultiplier, 
-        ySpeed.getAsDouble() * speedMultiplier,
-        thetaSpeed.getAsDouble() * speedMultiplier);
-      if (isFieldRelative) swerveSubsystem.updateModulesFieldRelative(chassisSpeeds);
-      else if (!isFieldRelative) swerveSubsystem.updateModules(chassisSpeeds);
+
+    if (slowMode.getAsBoolean()) {
+      speedMultiplier = .5;
     }
-    else swerveSubsystem.stop();
+    else if (speedMultiplier != 1) { 
+      speedMultiplier = 1;
+    }
+
+    if (turnAround.getAsBoolean() && !wasOneEighty) { 
+      timer.reset();
+      oneEighty = .5;
+      wasOneEighty = true;
+    }
+    else if (oneEighty != 0 && timer.hasElapsed(2)) {
+      oneEighty = 0;
+      wasOneEighty = false;
+    }
+
+    
+
+    if (resetGyro.getAsBoolean()) {
+      swerveSubsystem.resetGyro();
+    }
+
+    if (xMode.getAsBoolean()) {
+      swerveSubsystem.xMode();
+    }
+
+    if (Math.abs(xSpeed.getAsDouble()) > .15 || 
+        Math.abs(ySpeed.getAsDouble()) > .15 || 
+        Math.abs(thetaSpeed.getAsDouble()) > .15) {
+      swerveSubsystem.updateModules(
+        ChassisSpeeds.fromFieldRelativeSpeeds(
+          xSpeed.getAsDouble(), 
+          ySpeed.getAsDouble(), 
+          thetaSpeed.getAsDouble() + oneEighty, 
+          swerveSubsystem.getGyro()));
+    }
+    else {
+      swerveSubsystem.stop();
+      swerveSubsystem.updateModules(
+        ChassisSpeeds.fromFieldRelativeSpeeds(
+          0, 
+          0, 
+          oneEighty, 
+          swerveSubsystem.getGyro()));
+    }
+
   }
 
   

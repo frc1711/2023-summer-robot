@@ -13,25 +13,30 @@ import frc.robot.subsystems.Pneumatics;
 import frc.robot.subsystems.Spinner;
 
 public class IntakeCommand extends CommandBase {
-  
   Pneumatics pneumaticsSubsystem;
 
   Spinner spinnerSubsystem;
 
-  BooleanSupplier pneumaticsToggle;
+  BooleanSupplier runIntake, runIntakeReleased, reverseButton, runSpinner;
 
   Timer timer;
 
-  public IntakeCommand(Pneumatics pneumaticsSubsystem, Spinner spinnerSubsystem, BooleanSupplier intakeToggle) {
+  public IntakeCommand(Pneumatics pneumaticsSubsystem, Spinner spinnerSubsystem, BooleanSupplier runIntake, BooleanSupplier runIntakeReleased, BooleanSupplier reverseButton, BooleanSupplier runSpinner) {
     this.pneumaticsSubsystem = pneumaticsSubsystem;
     this.spinnerSubsystem = spinnerSubsystem;
-    addRequirements(pneumaticsSubsystem);
+    this.runIntake = runIntake;
+    this.runIntakeReleased = runIntakeReleased;
+    this.reverseButton = reverseButton;
+    this.runSpinner = runSpinner;
+    timer = new Timer();
+    addRequirements(pneumaticsSubsystem, spinnerSubsystem);
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
     pneumaticsSubsystem.enableSubsystem();
+    timer.restart();
     spinnerSubsystem.stop();
   }
 
@@ -40,17 +45,22 @@ public class IntakeCommand extends CommandBase {
   public void execute() {
     /**If the BooleanSupplier returns a true value, run the toggleSolenoid()
      method in the pneumaticsSubsystem */
-    if (pneumaticsToggle.getAsBoolean()) {
-      timer.reset();
-      if (!timer.hasElapsed(3)) { //TODO: discuss optimal running time with Andrew
+     
+      if (runIntake.getAsBoolean()) {
         pneumaticsSubsystem.changeState(Value.kForward);
-        spinnerSubsystem.runSpinner();
+        spinnerSubsystem.runSpinner(reverseButton.getAsBoolean());
       }
-      else {
+      else if (runIntakeReleased.getAsBoolean()) {
         pneumaticsSubsystem.changeState(Value.kReverse);
         spinnerSubsystem.stop();
       }
-    }
+      else if (runSpinner.getAsBoolean()) {
+        spinnerSubsystem.runSpinner(reverseButton.getAsBoolean());
+      }
+
+      else if (!runSpinner.getAsBoolean()) {
+        spinnerSubsystem.stop();
+      }
     
   }
 

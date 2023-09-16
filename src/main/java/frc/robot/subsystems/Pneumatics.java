@@ -11,7 +11,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Pneumatics extends SubsystemBase {
   
-  DoubleSolenoid solenoid;
+  DoubleSolenoid leftSolenoid, rightSolenoid;
 
   PneumaticsControlModule PCM;
 
@@ -19,22 +19,27 @@ public class Pneumatics extends SubsystemBase {
   public Pneumatics(PneumaticsControlModule PCM) {
     this.PCM = PCM;
 
-    solenoid = PCM.makeDoubleSolenoid(0, 0); //TODO: Find channel values
+    
+    leftSolenoid = PCM.makeDoubleSolenoid(2, 3); 
+    rightSolenoid = PCM.makeDoubleSolenoid(0, 1);
   }
 
   /**Runs the toggle() method on both solenoids.*/
   public void toggleSolenoid () {
-    solenoid.toggle();
+    leftSolenoid.toggle();
+    rightSolenoid.toggle();
   }
 
   public void changeState (Value state) {
-    if (solenoid.get() != state && solenoid.get() != Value.kOff) solenoid.set(state);
+    if (leftSolenoid.get() != state && leftSolenoid.get() != Value.kOff) leftSolenoid.set(state);
+    if (rightSolenoid.get() != state && rightSolenoid.get() != Value.kOff) rightSolenoid.set(state);
   }
 
   /**Enables the subsystem. Returns true if the compressor was enabled, false if not. 
    * Note: compressor would only not be enabled if it already was.*/
   public boolean enableSubsystem() {
-    if (solenoid.get() == Value.kOff || solenoid.get() == Value.kForward) solenoid.set(Value.kReverse);
+    if (leftSolenoid.get() == Value.kOff || leftSolenoid.get() == Value.kForward) leftSolenoid.set(Value.kReverse);
+    if (rightSolenoid.get() == Value.kOff || rightSolenoid.get() == Value.kForward) rightSolenoid.set(Value.kReverse);
     if (!PCM.getCompressor()) {
     PCM.enableCompressorDigital();
     return true;
@@ -44,8 +49,10 @@ public class Pneumatics extends SubsystemBase {
 
   /**Sets both solenoids to "off", then disables the compressor. */
   public void disableSubsystem () {
-    solenoid.set(Value.kReverse); //TODO: Find which channel extends/retracts to determine which direction is undeployed
-    solenoid.set(Value.kOff);
+    leftSolenoid.set(Value.kReverse); 
+    rightSolenoid.set(Value.kReverse);
+    leftSolenoid.set(Value.kOff);
+    rightSolenoid.set(Value.kOff);
     PCM.disableCompressor();
   }
 

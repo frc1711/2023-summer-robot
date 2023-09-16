@@ -2,21 +2,23 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package frc.robot.commands;
+package frc.robot.commands.Auton;
 
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.Swerve;
 
-public class SimpleAuton extends CommandBase {
+public class AutonDrive extends CommandBase {
 
   Swerve swerveSubsystem;
   Timer timer;
+  double timeInSeconds, xSpeedMPS, ySpeedMPS, thetaSpeedMPS;
 
-  public SimpleAuton(Swerve swerveSubsystem) {
+  public AutonDrive(Swerve swerveSubsystem, double timeInSeconds, double xSpeedMPS, double ySpeedMPS, double thetaSpeedMPS) {
     this.swerveSubsystem = swerveSubsystem;
     this.timer = new Timer();
+    this.timeInSeconds = timeInSeconds;
     addRequirements(swerveSubsystem);
   }
 
@@ -30,15 +32,16 @@ public class SimpleAuton extends CommandBase {
   @Override
   public void execute() {
     
-    /**Checks if 3 seconds have passed since the timer has been 
+    /**Checks if the given time has passed since the timer has been 
      * reset. If not, run the updateModules() method to move the robot*/
-    if (!timer.hasElapsed(3)) swerveSubsystem.updateModules(new ChassisSpeeds(1, 0, 0));
+    if (!timer.hasElapsed(timeInSeconds)) swerveSubsystem.updateModules(new ChassisSpeeds(xSpeedMPS, ySpeedMPS, thetaSpeedMPS));
     else swerveSubsystem.stop();
   }
 
   @Override
   public void end(boolean interrupted) {
     swerveSubsystem.stop();
+    timer.stop();
   }
 
   @Override
