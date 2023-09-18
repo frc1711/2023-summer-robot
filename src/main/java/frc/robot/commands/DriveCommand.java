@@ -67,15 +67,15 @@ public class DriveCommand extends CommandBase {
 
     if (turnAround.getAsBoolean() && !wasOneEighty) { 
       timer.reset();
-      oneEighty = .5;
+      oneEighty = 1;
       wasOneEighty = true;
     }
-    else if (oneEighty != 0 && timer.hasElapsed(2)) {
+    else if (oneEighty != 0 && timer.hasElapsed(1)) {
       oneEighty = 0;
       wasOneEighty = false;
     }
 
-    
+
 
     if (resetGyro.getAsBoolean()) {
       swerveSubsystem.resetGyro();

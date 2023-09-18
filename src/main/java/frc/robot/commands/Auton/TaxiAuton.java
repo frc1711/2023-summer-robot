@@ -9,12 +9,12 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.Swerve;
 
-public class SimpleAuton extends CommandBase {
+public class TaxiAuton extends CommandBase {
 
   Swerve swerveSubsystem;
   Timer timer;
 
-  public SimpleAuton(Swerve swerveSubsystem) {
+  public TaxiAuton(Swerve swerveSubsystem) {
     this.swerveSubsystem = swerveSubsystem;
     this.timer = new Timer();
     addRequirements(swerveSubsystem);
@@ -33,7 +33,7 @@ public class SimpleAuton extends CommandBase {
     /**Checks if 3 seconds have passed since the timer has been 
      * reset. If not, run the updateModules() method to move the robot*/
     if (!timer.hasElapsed(3)) swerveSubsystem.updateModules(new ChassisSpeeds(1, 0, 0));
-    else swerveSubsystem.stop();
+    else swerveSubsystem.stop(); //TODO: Determine timing for taxi auton
   }
 
   @Override

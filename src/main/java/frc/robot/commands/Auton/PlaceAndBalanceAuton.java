@@ -4,31 +4,27 @@
 
 package frc.robot.commands.Auton;
 
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.Spinner;
 import frc.robot.subsystems.Swerve;
-import frc.robot.subsystems.Spinner.Node;
 
 public class PlaceAndBalanceAuton extends CommandBase {
   
-  Timer timer;
   Swerve swerveSubsystem;
-  AutonDrive driveToGoal, driveToStation;
+  AutonDrive driveToStation;
+  ShootAuton shoot;
   Spinner spinnerSubsystem;
 
   public PlaceAndBalanceAuton(Swerve swerveSubsystem, Spinner spinnerSubsystem) {
-    this.timer = new Timer();
     this.swerveSubsystem = swerveSubsystem;
     this.spinnerSubsystem = spinnerSubsystem;
-    driveToGoal = new AutonDrive(swerveSubsystem, 0, 0, 0, 0); //TODO: Determine these values
-    driveToStation = new AutonDrive(swerveSubsystem, 0, 0, 0, 0); //TODO: Determine these values
+    driveToStation = new AutonDrive(swerveSubsystem, 3, .5, 0, 0); //TODO: Determine these values
+    shoot = new ShootAuton(spinnerSubsystem, 1);
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    timer.restart();
     swerveSubsystem.stop();
     spinnerSubsystem.stop();
   }
@@ -36,20 +32,12 @@ public class PlaceAndBalanceAuton extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    driveToGoal.schedule();
-    timer.reset();
-    if (!timer.hasElapsed(2)) spinnerSubsystem.runSpinner(Node.HIGH);
-    else {
-      spinnerSubsystem.stop();
-      driveToStation.schedule();
-    }
-    
+        shoot.andThen(driveToStation);
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    timer.stop();
     swerveSubsystem.stop();
     spinnerSubsystem.stop();
   }
