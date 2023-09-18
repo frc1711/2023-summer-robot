@@ -27,12 +27,13 @@ public class PlaceAndBalanceAuton extends CommandBase {
   public void initialize() {
     swerveSubsystem.stop();
     spinnerSubsystem.stop();
+    
+    shoot.andThen(driveToStation);
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-        shoot.andThen(driveToStation);
   }
 
   // Called once the command ends or is interrupted.

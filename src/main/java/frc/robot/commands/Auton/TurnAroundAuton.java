@@ -18,7 +18,7 @@ public class TurnAroundAuton extends CommandBase {
 
   public TurnAroundAuton(Swerve swerveSubsystem) {
     this.swerveSubsystem = swerveSubsystem;
-    autonDrive = new AutonDrive(swerveSubsystem, 2, 0, 0, .5);
+    autonDrive = new AutonDrive(swerveSubsystem, 1, 0, 0, 1);
     timer = new Timer();
   }
 
