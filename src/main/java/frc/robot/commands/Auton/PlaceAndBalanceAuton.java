@@ -8,6 +8,7 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.Spinner;
 import frc.robot.subsystems.Swerve;
+import frc.robot.subsystems.Spinner.Node;
 
 public class PlaceAndBalanceAuton extends CommandBase {
   
@@ -37,7 +38,7 @@ public class PlaceAndBalanceAuton extends CommandBase {
   public void execute() {
     driveToGoal.schedule();
     timer.reset();
-    if (!timer.hasElapsed(2)) spinnerSubsystem.runSpinner(true);
+    if (!timer.hasElapsed(2)) spinnerSubsystem.runSpinner(Node.HIGH);
     else {
       spinnerSubsystem.stop();
       driveToStation.schedule();

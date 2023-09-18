@@ -9,6 +9,7 @@ import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.Pneumatics;
 import frc.robot.subsystems.Spinner;
+import frc.robot.subsystems.Spinner.Node;
 
 public class IntakeAuton extends CommandBase {
 
@@ -38,10 +39,10 @@ public class IntakeAuton extends CommandBase {
   public void execute() {
     if (!timer.hasElapsed(timeInSeconds)) {
       pneumaticsSubsystem.changeState(Value.kForward);
-      spinnerSubsystem.runSpinner(false);
+      spinnerSubsystem.runSpinner(Node.HIGH);
     }
     else {
-      pneumaticsSubsystem.toggleSolenoids();
+      pneumaticsSubsystem.changeState(Value.kReverse);
       spinnerSubsystem.stop();
     }
   }
