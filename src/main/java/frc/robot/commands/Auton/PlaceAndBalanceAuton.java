@@ -5,6 +5,8 @@
 package frc.robot.commands.Auton;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.commands.Auton.framework.AutonDrive;
+import frc.robot.commands.Auton.framework.ShootAuton;
 import frc.robot.subsystems.Spinner;
 import frc.robot.subsystems.Swerve;
 

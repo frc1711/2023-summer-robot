@@ -4,6 +4,7 @@
 
 package frc.robot.subsystems;
 
+import com.ctre.phoenix.sensors.AbsoluteSensorRange;
 import com.ctre.phoenix.sensors.CANCoder;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMax.IdleMode;
@@ -39,10 +40,12 @@ public class SwerveModule extends SubsystemBase {
 
   public SwerveModule(int steerMotorID, int driveMotorID, int encoderID, Translation2d motorMeters) {
     encoder = new CANCoder(encoderID);
+    encoder.configAbsoluteSensorRange(AbsoluteSensorRange.Signed_PlusMinus180);
     driveMotor = initializeMotor(driveMotorID);
     steerMotor = initializeMotor(steerMotorID);
     steerPID.enableContinuousInput(-180, 180);
     this.motorMeters = motorMeters;
+    steerPID.setTolerance(3);
   }
 
   /** Uses the average RPM of the motor, along with the circumference of the wheel, 
@@ -59,17 +62,14 @@ public class SwerveModule extends SubsystemBase {
     encoderOffset = encoder.getAbsolutePosition();
   } 
 
-  double finalAngle, unregulatedAngle;
+  double finalAngle, regulatedAngle;
   /**Uses the encoder offset, which is set using the resetEncoders() method, 
    * to determine the current position of the CANcoder */
   public Rotation2d getEncoderRotation () {
-    finalAngle = -180;
-    unregulatedAngle = encoder.getAbsolutePosition() - encoderOffset;
-    if (unregulatedAngle < 0) {
-      finalAngle += unregulatedAngle;
-      return Rotation2d.fromDegrees(finalAngle);
-    }
-    else return Rotation2d.fromDegrees((encoder.getAbsolutePosition() - encoderOffset) - 180);
+    regulatedAngle = encoder.getAbsolutePosition() - encoderOffset;
+    if (regulatedAngle < -180) regulatedAngle += 360;
+    else if (regulatedAngle > 180) regulatedAngle -= 360;
+    return Rotation2d.fromDegrees(regulatedAngle);
   }
 
   /**Takes in a SwerveModuleState, then uses a PID controller to calculate 

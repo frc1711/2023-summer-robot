@@ -22,19 +22,23 @@ public class Spinner extends SubsystemBase {
   }
 
   public enum Node {
-    LOW,
-    MID,
-    HIGH;
+    LOW (-.5),
+    MID (-.75),
+    HIGH (-1), 
+    INTAKE (.5),
+    STOP (0);
+
+    double spinnerSpeed;
+
+    Node (double spinnerSpeed) {
+      this.spinnerSpeed = spinnerSpeed;
+    }
   }
 
   double reverseMultiplier;
   public void runSpinner (Node node) {
-    if (node == Node.HIGH) reverseMultiplier = -2;
-    if (node == Node.MID) reverseMultiplier = -1.5;
-    if (node == Node.LOW) reverseMultiplier = -1;
-    else reverseMultiplier = 1;
-    leftSpinnerMotor.set(.5 * reverseMultiplier); //TODO: Run testing to determine optimal speed
-    rightSpinnerMotor.set(.5 * reverseMultiplier);
+    leftSpinnerMotor.set(node.spinnerSpeed); //TODO: Run testing to determine optimal speed
+    rightSpinnerMotor.set(node.spinnerSpeed);
   }
 
   public void stop () {

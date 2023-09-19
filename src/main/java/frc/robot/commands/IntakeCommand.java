@@ -44,31 +44,27 @@ public class IntakeCommand extends CommandBase {
     spinnerSubsystem.stop();
   }
 
-  public Node node;
+  Node node;
+
   @Override
   public void execute() {
     /**If the BooleanSupplier returns a true value, run the toggleSolenoid()
      method in the pneumaticsSubsystem */
-      if (shootLow.getAsBoolean()) node = Node.LOW;
-      else if (shootMid.getAsBoolean()) node = Node.MID;
-      else if (shootHigh.getAsBoolean()) node = Node.HIGH;
+      if (!runSpinner.getAsBoolean() && shootLow.getAsBoolean() && !shootMid.getAsBoolean() && !shootHigh.getAsBoolean()) node = Node.LOW;
+      else if (!runSpinner.getAsBoolean() && shootMid.getAsBoolean() && !shootLow.getAsBoolean() && !shootHigh.getAsBoolean()) node = Node.MID;
+      else if (!runSpinner.getAsBoolean() && shootHigh.getAsBoolean() && !shootLow.getAsBoolean() && !shootMid.getAsBoolean()) node = Node.HIGH;
+      else if (runSpinner.getAsBoolean() && !shootHigh.getAsBoolean() && !shootLow.getAsBoolean() && !shootMid.getAsBoolean()) node = Node.INTAKE;
+      else node = Node.STOP;
+
      
       if (runIntake.getAsBoolean()) {
         pneumaticsSubsystem.changeState(Value.kForward);
-        spinnerSubsystem.runSpinner(node);
       }
       else if (runIntakeReleased.getAsBoolean()) {
         pneumaticsSubsystem.changeState(Value.kReverse);
-        spinnerSubsystem.stop();
-      }
-      else if (runSpinner.getAsBoolean()) {
-        spinnerSubsystem.runSpinner(node);
       }
 
-      else if (!runSpinner.getAsBoolean()) {
-        spinnerSubsystem.stop();
-      }
-    
+      spinnerSubsystem.runSpinner(node);    
   }
 
   // Called once the command ends or is interrupted.

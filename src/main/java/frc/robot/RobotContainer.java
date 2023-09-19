@@ -6,7 +6,7 @@ package frc.robot;
 
 import frc.robot.commands.DriveCommand;
 import frc.robot.commands.IntakeCommand;
-import frc.robot.commands.Auton.SimpleAuton;
+import frc.robot.commands.Auton.framework.TaxiAuton;
 import frc.robot.subsystems.Pneumatics;
 import frc.robot.subsystems.Spinner;
 import frc.robot.subsystems.Swerve;
@@ -71,8 +71,8 @@ public class RobotContainer {
       () -> driverController.getLeftY(), 
       () -> driverController.getLeftX(), 
       () -> driverController.getRightX(), 
-      () -> driverController.getAButton(),
-      () -> driverController.getYButtonPressed(),
+      () -> driverController.getRightTriggerAxis() > .1,
+      () -> driverController.getRightStickButton(),
       () -> driverController.getXButton(),
       () -> driverController.getStartButton());
     
@@ -81,9 +81,9 @@ public class RobotContainer {
       spinnerSubsystem, 
       () -> driverController.getLeftBumperPressed(),
       () -> driverController.getLeftBumperReleased(),
-      () -> driverController.getPOV() == 0,
-      () -> driverController.getPOV() == 90,
-      () -> driverController.getPOV() == 180,
+      () -> driverController.getAButton(),
+      () -> driverController.getBButton(),
+      () -> driverController.getYButton(),
       () -> driverController.getRightBumper());
 
     swerveSubsystem.setDefaultCommand(driveCommand);
@@ -101,6 +101,6 @@ public class RobotContainer {
   }
 
   public Command getAutonomousCommand() {
-    return new SimpleAuton(swerveSubsystem);
+    return new TaxiAuton(swerveSubsystem);
   }
 }

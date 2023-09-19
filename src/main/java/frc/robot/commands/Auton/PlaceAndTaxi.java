@@ -2,44 +2,46 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package frc.robot.commands.Auton.framework;
+package frc.robot.commands.Auton;
 
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.commands.Auton.framework.ShootAuton;
+import frc.robot.commands.Auton.framework.TaxiAuton;
+import frc.robot.subsystems.Spinner;
 import frc.robot.subsystems.Swerve;
 
-public class TurnAroundAuton extends CommandBase {
+public class PlaceAndTaxi extends CommandBase {
   
   Swerve swerveSubsystem;
+  Spinner spinnerSubsystem;
 
-  AutonDrive autonDrive;
+  ShootAuton shoot;
+  TaxiAuton taxi;
 
-  Timer timer;
-
-  public TurnAroundAuton(Swerve swerveSubsystem) {
+  public PlaceAndTaxi(Swerve swerveSubsystem, Spinner spinnerSubsystem) {
     this.swerveSubsystem = swerveSubsystem;
-    autonDrive = new AutonDrive(swerveSubsystem, 1, 0, 0, 1);
-    timer = new Timer();
+    this.spinnerSubsystem = spinnerSubsystem;
+    shoot = new ShootAuton(spinnerSubsystem, 1);
+    taxi = new TaxiAuton(swerveSubsystem);
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    timer.start();
     swerveSubsystem.stop();
-    autonDrive.schedule();
+    spinnerSubsystem.stop();
+    shoot.andThen(taxi);
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
-  public void execute() {
-  }
+  public void execute() {}
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    timer.stop();
     swerveSubsystem.stop();
+    spinnerSubsystem.stop();
   }
 
   // Returns true when the command should end.

@@ -56,6 +56,7 @@ public class Swerve extends SubsystemBase {
     /**Create a new sendable command to reset the encoders */
     RobotContainer.putCommand("Reset Encoders", new InstantCommand(this::resetEncoders, this), true);
     RobotContainer.putCommand("Reset Gyro", new InstantCommand(this::resetGyro, this), true);
+    RobotContainer.putCommand("X-Mode", new InstantCommand(this::xMode, this), false);
   }
 
   /**Runs the stop() method on each module */

@@ -85,9 +85,10 @@ public class DriveCommand extends CommandBase {
       swerveSubsystem.xMode();
     }
 
-    if (Math.abs(xSpeed.getAsDouble()) > .15 || 
+    else if (Math.abs(xSpeed.getAsDouble()) > .15 || 
         Math.abs(ySpeed.getAsDouble()) > .15 || 
-        Math.abs(thetaSpeed.getAsDouble()) > .15) {
+        Math.abs(thetaSpeed.getAsDouble()) > .15 && 
+        !xMode.getAsBoolean()) {
       swerveSubsystem.updateModules(
         ChassisSpeeds.fromFieldRelativeSpeeds(
           xSpeed.getAsDouble(), 
