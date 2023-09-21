@@ -24,7 +24,7 @@ public class Spinner extends SubsystemBase {
   public enum Node {
     LOW (-.5, -.5),
     MID (-.75, -1),
-    HIGH (-.5, -1), 
+    HIGH (-.97, -1), 
     INTAKE (.5, .5),
     STOP (0, 0);
 

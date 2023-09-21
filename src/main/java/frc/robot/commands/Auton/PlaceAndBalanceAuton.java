@@ -5,12 +5,13 @@
 package frc.robot.commands.Auton;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.commands.Auton.framework.AutonDrive;
 import frc.robot.commands.Auton.framework.ShootAuton;
 import frc.robot.subsystems.Spinner;
 import frc.robot.subsystems.Swerve;
 
-public class PlaceAndBalanceAuton extends CommandBase {
+public class PlaceAndBalanceAuton extends SequentialCommandGroup {
   
   Swerve swerveSubsystem;
   AutonDrive driveToStation;
@@ -18,36 +19,11 @@ public class PlaceAndBalanceAuton extends CommandBase {
   Spinner spinnerSubsystem;
 
   public PlaceAndBalanceAuton(Swerve swerveSubsystem, Spinner spinnerSubsystem) {
-    this.swerveSubsystem = swerveSubsystem;
-    this.spinnerSubsystem = spinnerSubsystem;
-    driveToStation = new AutonDrive(swerveSubsystem, 3, .5, 0, 0); //TODO: Determine these values
-    shoot = new ShootAuton(spinnerSubsystem, 1);
-  }
-
-  // Called when the command is initially scheduled.
-  @Override
-  public void initialize() {
-    swerveSubsystem.stop();
-    spinnerSubsystem.stop();
     
-    shoot.andThen(driveToStation);
+    super (
+      new ShootAuton(spinnerSubsystem),
+      new AutonDrive(swerveSubsystem, 4, -.25, 0, 0)
+    );
   }
 
-  // Called every time the scheduler runs while the command is scheduled.
-  @Override
-  public void execute() {
-  }
-
-  // Called once the command ends or is interrupted.
-  @Override
-  public void end(boolean interrupted) {
-    swerveSubsystem.stop();
-    spinnerSubsystem.stop();
-  }
-
-  // Returns true when the command should end.
-  @Override
-  public boolean isFinished() {
-    return false;
-  }
 }

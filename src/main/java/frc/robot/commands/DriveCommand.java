@@ -20,6 +20,8 @@ public class DriveCommand extends CommandBase {
 
   DoubleSupplier xSpeed, ySpeed, thetaSpeed;
 
+  double xSpeedFinal, ySpeedFinal, thetaSpeedFinal;
+
   BooleanSupplier slowMode, resetEncoders, resetGyro, turnAround, xMode;
 
   public DriveCommand(
@@ -85,26 +87,22 @@ public class DriveCommand extends CommandBase {
       swerveSubsystem.xMode();
     }
 
-    else if (Math.abs(xSpeed.getAsDouble()) > .15 || 
-        Math.abs(ySpeed.getAsDouble()) > .15 || 
-        Math.abs(thetaSpeed.getAsDouble()) > .15 && 
-        !xMode.getAsBoolean()) {
-      swerveSubsystem.updateModules(
-        ChassisSpeeds.fromFieldRelativeSpeeds(
-          xSpeed.getAsDouble(), 
-          ySpeed.getAsDouble(), 
-          thetaSpeed.getAsDouble() + oneEighty, 
-          swerveSubsystem.getGyro()));
-    }
+    else if (Math.abs(xSpeed.getAsDouble()) > .15) xSpeedFinal = xSpeed.getAsDouble();
+    else if (Math.abs(ySpeed.getAsDouble()) > .15) ySpeedFinal = ySpeed.getAsDouble();
+    else if (Math.abs(thetaSpeed.getAsDouble()) > .15) thetaSpeedFinal = thetaSpeed.getAsDouble();
+
     else {
+      xSpeedFinal = 0;
+      ySpeedFinal = 0;
+      thetaSpeedFinal = 0;
+    }
       swerveSubsystem.stop();
       swerveSubsystem.updateModules(
         ChassisSpeeds.fromFieldRelativeSpeeds(
-          0, 
-          0, 
-          oneEighty, 
+          xSpeedFinal, 
+          ySpeedFinal, 
+          thetaSpeedFinal + oneEighty, 
           swerveSubsystem.getGyro()));
-    }
 
   }
 

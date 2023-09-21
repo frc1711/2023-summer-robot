@@ -7,18 +7,18 @@ package frc.robot.commands.Auton.framework;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.Spinner;
+import frc.robot.subsystems.Spinner.Node;
 
 public class ShootAuton extends CommandBase {
 
   Spinner spinnerSubsystem;
-  int timeInSeconds;
   Timer timer;  
   
-  public ShootAuton(Spinner spinnerSubsystem, int timeInSeconds) {
-    this. spinnerSubsystem = spinnerSubsystem;
-    this.timeInSeconds = timeInSeconds;
+  public ShootAuton(Spinner spinnerSubsystem) {
+    this.spinnerSubsystem = spinnerSubsystem;
     timer = new Timer();
     addRequirements(spinnerSubsystem);
+    System.out.println("ShootAuton is constructed");
   }
 
   // Called when the command is initially scheduled.
@@ -26,24 +26,31 @@ public class ShootAuton extends CommandBase {
   public void initialize() {
     timer.restart();
     spinnerSubsystem.stop();
+    System.out.println("Code Initialized");
   }
 
+  Node node;
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    if (!timer.hasElapsed(timeInSeconds)) {
-      spinnerSubsystem.runSpinner(null);
+    System.out.println("Code executes");
+
+    if (!timer.hasElapsed(1)) {
+      System.out.println("If is working");
+      node = Node.HIGH;
     }
 
     else {
-      spinnerSubsystem.stop();
+      node = Node.STOP;
+      System.out.println("Else is working");
     }
+
+    spinnerSubsystem.runSpinner(node);
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    timer.stop();
     spinnerSubsystem.stop();
   }
 

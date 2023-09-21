@@ -6,6 +6,8 @@ package frc.robot;
 
 import frc.robot.commands.DriveCommand;
 import frc.robot.commands.IntakeCommand;
+import frc.robot.commands.Auton.PlaceAndTaxi;
+import frc.robot.commands.Auton.framework.ShootAuton;
 import frc.robot.commands.Auton.framework.TaxiAuton;
 import frc.robot.subsystems.Pneumatics;
 import frc.robot.subsystems.Spinner;
@@ -101,6 +103,7 @@ public class RobotContainer {
   }
 
   public Command getAutonomousCommand() {
-    return new TaxiAuton(swerveSubsystem);
+    System.out.println("getAuton is called");
+    return new ShootAuton(spinnerSubsystem);
   }
 }

@@ -4,49 +4,75 @@
 
 package frc.robot.commands.Auton;
 
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.commands.Auton.framework.ShootAuton;
 import frc.robot.commands.Auton.framework.TaxiAuton;
+// import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+// import frc.robot.commands.Auton.framework.ShootAuton;
+// import frc.robot.commands.Auton.framework.TaxiAuton;
+import frc.robot.subsystems.Pneumatics;
 import frc.robot.subsystems.Spinner;
 import frc.robot.subsystems.Swerve;
+import frc.robot.subsystems.Spinner.Node;
 
-public class PlaceAndTaxi extends CommandBase {
+public class PlaceAndTaxi extends SequentialCommandGroup {
   
   Swerve swerveSubsystem;
+  Pneumatics pneumaticsSubsystem;
   Spinner spinnerSubsystem;
 
-  ShootAuton shoot;
-  TaxiAuton taxi;
+  Timer timer;
 
-  public PlaceAndTaxi(Swerve swerveSubsystem, Spinner spinnerSubsystem) {
-    this.swerveSubsystem = swerveSubsystem;
-    this.spinnerSubsystem = spinnerSubsystem;
-    shoot = new ShootAuton(spinnerSubsystem, 1);
-    taxi = new TaxiAuton(swerveSubsystem);
+  public PlaceAndTaxi(Swerve swerveSubsystem, Pneumatics pneumaticsSubsystem, Spinner spinnerSubsystem) {
+    super (
+      new ShootAuton(spinnerSubsystem),
+      new TaxiAuton(swerveSubsystem, pneumaticsSubsystem)
+    );
+  //   this.swerveSubsystem = swerveSubsystem;
+  //   this.spinnerSubsystem = spinnerSubsystem;
+  //   // // timer = new Timer();
+  //   // shoot = new ShootAuton(spinnerSubsystem, 1);
+  //   // taxi = new TaxiAuton(swerveSubsystem, pneumaticsSubsystem);
   }
 
-  // Called when the command is initially scheduled.
-  @Override
-  public void initialize() {
-    swerveSubsystem.stop();
-    spinnerSubsystem.stop();
-    shoot.andThen(taxi);
-  }
+  // // Called when the command is initially scheduled.
+  // @Override
+  // public void initialize() {
+  //   // swerveSubsystem.stop();
+  //   // spinnerSubsystem.stop();
+  //   // timer.restart();
+  // }
 
-  // Called every time the scheduler runs while the command is scheduled.
-  @Override
-  public void execute() {}
+  // // Called every time the scheduler runs while the command is scheduled.
+  // @Override
+  // public void execute() {
+  // // if (!timer.hasElapsed(1)) {
+  // //   spinnerSubsystem.runSpinner(Node.HIGH);
+  // // }
 
-  // Called once the command ends or is interrupted.
-  @Override
-  public void end(boolean interrupted) {
-    swerveSubsystem.stop();
-    spinnerSubsystem.stop();
-  }
+  // // else {
+  // //   spinnerSubsystem.stop();
+  // // }
 
-  // Returns true when the command should end.
-  @Override
-  public boolean isFinished() {
-    return false;
-  }
+  // // if (!timer.hasElapsed(3)) swerveSubsystem.updateModules(new ChassisSpeeds(-.5, 0, 0));
+
+  // // else swerveSubsystem.stop(); //TODO: Determine timing for taxi auton
+  // }
+
+  // // Called once the command ends or is interrupted.
+  // @Override
+  // public void end(boolean interrupted) {
+  //   // swerveSubsystem.stop();
+  //   // spinnerSubsystem.stop();
+  //   // timer.stop();
+  // }
+
+  // // Returns true when the command should end.
+  // @Override
+  // public boolean isFinished() {
+  //   return false;
+  // }
 }

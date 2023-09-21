@@ -51,7 +51,7 @@ public class SwerveModule extends SubsystemBase {
   /** Uses the average RPM of the motor, along with the circumference of the wheel, 
    * to calculate an approximate voltage value when given a speed in meters per second 
    */
-  private double maxSpeed = (5500 / 60.) * .1 / 6;
+  private double maxSpeed = (5500 / 60.) * .1 / 7;
   private double metersPerSecondToPercentage (double metersPerSecond) {
     return metersPerSecond / maxSpeed;
   }
@@ -59,7 +59,7 @@ public class SwerveModule extends SubsystemBase {
   /**Sets the encoderOffset to the current value of the CANcoder. This value is 
    * later used to set a new zero position for the encoder. */
   public void resetEncoder () {
-    encoderOffset = encoder.getAbsolutePosition();
+    encoderOffset = encoder.getAbsolutePosition() - 180;
   } 
 
   double finalAngle, regulatedAngle;
