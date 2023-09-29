@@ -34,7 +34,7 @@ public class AutonDrive extends CommandBase {
     
     /**Checks if the given time has passed since the timer has been 
      * reset. If not, run the updateModules() method to move the robot*/
-    if (!timer.hasElapsed(timeInSeconds)) swerveSubsystem.updateModules(new ChassisSpeeds(xSpeedMPS, ySpeedMPS, thetaSpeedMPS));
+    if (!timer.hasElapsed(timeInSeconds)) swerveSubsystem.updateModules(new ChassisSpeeds(xSpeedMPS, ySpeedMPS, thetaSpeedMPS), 1);
     else swerveSubsystem.stop();
   }
 

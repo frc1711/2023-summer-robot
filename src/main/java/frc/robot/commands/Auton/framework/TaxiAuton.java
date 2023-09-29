@@ -20,7 +20,7 @@ public class TaxiAuton extends CommandBase {
     this.swerveSubsystem = swerveSubsystem;
     this.timer = new Timer();
     this.pneumaticsSubsystem = pneumaticsSubsystem;
-    addRequirements(swerveSubsystem);
+    addRequirements(swerveSubsystem, pneumaticsSubsystem);
   }
 
   @Override
@@ -36,7 +36,7 @@ public class TaxiAuton extends CommandBase {
     
     /**Checks if 3 seconds have passed since the timer has been 
      * reset. If not, run the updateModules() method to move the robot*/
-    if (!timer.hasElapsed(3)) swerveSubsystem.updateModules(new ChassisSpeeds(-.5, 0, 0));
+    if (!timer.hasElapsed(2.75)) swerveSubsystem.updateModules(new ChassisSpeeds(.5, 0, 0), 1);
     else swerveSubsystem.stop(); //TODO: Determine timing for taxi auton
   }
 
@@ -47,6 +47,6 @@ public class TaxiAuton extends CommandBase {
 
   @Override
   public boolean isFinished() {
-    return false;
+    return timer.hasElapsed(3.5);
   }
 }

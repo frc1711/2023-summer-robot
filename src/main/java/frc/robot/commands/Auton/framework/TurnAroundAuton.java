@@ -5,10 +5,10 @@
 package frc.robot.commands.Auton.framework;
 
 import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj2.command.CommandBase;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.subsystems.Swerve;
 
-public class TurnAroundAuton extends CommandBase {
+public class TurnAroundAuton extends SequentialCommandGroup {
   
   Swerve swerveSubsystem;
 
@@ -17,34 +17,6 @@ public class TurnAroundAuton extends CommandBase {
   Timer timer;
 
   public TurnAroundAuton(Swerve swerveSubsystem) {
-    this.swerveSubsystem = swerveSubsystem;
-    autonDrive = new AutonDrive(swerveSubsystem, 1, 0, 0, 1);
-    timer = new Timer();
-  }
-
-  // Called when the command is initially scheduled.
-  @Override
-  public void initialize() {
-    timer.start();
-    swerveSubsystem.stop();
-    autonDrive.schedule();
-  }
-
-  // Called every time the scheduler runs while the command is scheduled.
-  @Override
-  public void execute() {
-  }
-
-  // Called once the command ends or is interrupted.
-  @Override
-  public void end(boolean interrupted) {
-    timer.stop();
-    swerveSubsystem.stop();
-  }
-
-  // Returns true when the command should end.
-  @Override
-  public boolean isFinished() {
-    return false;
+    super (new AutonDrive(swerveSubsystem, 1, 0, 0, 1));
   }
 }

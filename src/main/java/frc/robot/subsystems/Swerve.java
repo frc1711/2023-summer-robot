@@ -56,7 +56,6 @@ public class Swerve extends SubsystemBase {
     /**Create a new sendable command to reset the encoders */
     RobotContainer.putCommand("Reset Encoders", new InstantCommand(this::resetEncoders, this), true);
     RobotContainer.putCommand("Reset Gyro", new InstantCommand(this::resetGyro, this), true);
-    RobotContainer.putCommand("X-Mode", new InstantCommand(this::xMode, this), false);
   }
 
   /**Runs the stop() method on each module */
@@ -71,8 +70,12 @@ public class Swerve extends SubsystemBase {
     gyro.reset();
   }
 
-  public Rotation2d getGyro () {
+  public Rotation2d getGyroRotation () {
     return gyro.getRotation2d();
+  }
+
+  public float getGyroPitch () {
+    return gyro.getPitch();
   }
 
   /**Runs the resetEncoder() method on each module */
@@ -83,29 +86,29 @@ public class Swerve extends SubsystemBase {
     rrModule.resetEncoder();
   }
 
-  public void updateModulesFieldRelative (ChassisSpeeds desiredVelocity) {
+  public void updateModulesFieldRelative (ChassisSpeeds desiredVelocity, double speedMultiplier) {
     ChassisSpeeds.fromFieldRelativeSpeeds(desiredVelocity, gyro.getRotation2d());
     SwerveModuleState[] moduleStates = kinematics.toSwerveModuleStates(desiredVelocity);
-    flModule.update(moduleStates[0]);
-    frModule.update(moduleStates[1]);
-    rlModule.update(moduleStates[2]);
-    rrModule.update(moduleStates[3]);
+    flModule.update(moduleStates[0], speedMultiplier);
+    frModule.update(moduleStates[1], speedMultiplier);
+    rlModule.update(moduleStates[2], speedMultiplier);
+    rrModule.update(moduleStates[3], speedMultiplier);
   }
 
   /**Updates each module using the reverse kinematics feature from SwerveDriveKinematics */
-  public void updateModules (ChassisSpeeds desiredVelocity) {
+  public void updateModules (ChassisSpeeds desiredVelocity, double speedMultiplier) {
     SwerveModuleState[] moduleStates = kinematics.toSwerveModuleStates(desiredVelocity);
-    flModule.update(moduleStates[0]);
-    frModule.update(moduleStates[1]);
-    rlModule.update(moduleStates[2]);
-    rrModule.update(moduleStates[3]);
+    flModule.update(moduleStates[0], speedMultiplier);
+    frModule.update(moduleStates[1], speedMultiplier);
+    rlModule.update(moduleStates[2], speedMultiplier);
+    rrModule.update(moduleStates[3], speedMultiplier);
   }
 
   public void xMode () {
-    flModule.update(new SwerveModuleState(0, new Rotation2d(135)));
-    frModule.update(new SwerveModuleState(0, new Rotation2d(-135)));
-    rlModule.update(new SwerveModuleState(0, new Rotation2d(45)));
-    rrModule.update(new SwerveModuleState(0, new Rotation2d(-45)));
+    flModule.update(new SwerveModuleState(0, new Rotation2d(135)), 1);
+    frModule.update(new SwerveModuleState(0, new Rotation2d(-135)), 1);
+    rlModule.update(new SwerveModuleState(0, new Rotation2d(45)), 1);
+    rrModule.update(new SwerveModuleState(0, new Rotation2d(-45)), 1);
   }
 
   @Override

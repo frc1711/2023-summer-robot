@@ -16,6 +16,7 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.util.AccelerationCurve;
 
 public class SwerveModule extends SubsystemBase {
 
@@ -45,15 +46,15 @@ public class SwerveModule extends SubsystemBase {
     steerMotor = initializeMotor(steerMotorID);
     steerPID.enableContinuousInput(-180, 180);
     this.motorMeters = motorMeters;
-    steerPID.setTolerance(3);
+    steerPID.setTolerance(1);
   }
 
   /** Uses the average RPM of the motor, along with the circumference of the wheel, 
    * to calculate an approximate voltage value when given a speed in meters per second 
    */
-  private double maxSpeed = (5500 / 60.) * .1 / 7;
+  private double maxSpeed = (5500 / 60.) * .1 / 10;
   private double metersPerSecondToPercentage (double metersPerSecond) {
-    return metersPerSecond / maxSpeed;
+    return (metersPerSecond / maxSpeed); //TODO: Change 50 to 100 when testing is done
   }
 
   /**Sets the encoderOffset to the current value of the CANcoder. This value is 
@@ -75,7 +76,7 @@ public class SwerveModule extends SubsystemBase {
   /**Takes in a SwerveModuleState, then uses a PID controller to calculate 
    * approximate values for the steerSpeed and the metersPerSecondToVoltage() 
    * method to calculate the driveVoltage. WIP*/
-  public void update (SwerveModuleState desiredState) {
+  public void update (SwerveModuleState desiredState, double speedMultiplier) {
     unoptimizedRotation = desiredState.angle.getDegrees();
     SwerveModuleState optimizedState = SwerveModuleState.optimize(desiredState, getEncoderRotation());
     optimizedRotation = optimizedState.angle.getDegrees();
@@ -83,8 +84,8 @@ public class SwerveModule extends SubsystemBase {
     this.steerSpeed = steerSpeed;
     steerMotor.set(steerSpeed);
     driveSpeed = optimizedState.speedMetersPerSecond;
-    driveMotor.set(metersPerSecondToPercentage(optimizedState.speedMetersPerSecond));
-    drivePercent = metersPerSecondToPercentage(optimizedState.speedMetersPerSecond);
+    driveMotor.set(metersPerSecondToPercentage(optimizedState.speedMetersPerSecond * speedMultiplier));
+    drivePercent = metersPerSecondToPercentage(optimizedState.speedMetersPerSecond * speedMultiplier);
   }
   
   public void stop () {

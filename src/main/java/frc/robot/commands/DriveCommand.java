@@ -11,6 +11,7 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.Swerve;
+import frc.robot.util.AccelerationCurve;
 
 public class DriveCommand extends CommandBase {
   
@@ -19,8 +20,6 @@ public class DriveCommand extends CommandBase {
   Timer timer;
 
   DoubleSupplier xSpeed, ySpeed, thetaSpeed;
-
-  double xSpeedFinal, ySpeedFinal, thetaSpeedFinal;
 
   BooleanSupplier slowMode, resetEncoders, resetGyro, turnAround, xMode;
 
@@ -55,15 +54,15 @@ public class DriveCommand extends CommandBase {
     timer.start();
   }
 
-  double speedMultiplier, oneEighty;
+  double speedMultiplier, oneEighty, turnSpeed;
   boolean wasOneEighty;
   @Override
   public void execute() {
 
     if (slowMode.getAsBoolean()) {
-      speedMultiplier = .5;
+      speedMultiplier = .25;
     }
-    else if (speedMultiplier != 1) { 
+    else { 
       speedMultiplier = 1;
     }
 
@@ -77,8 +76,6 @@ public class DriveCommand extends CommandBase {
       wasOneEighty = false;
     }
 
-
-
     if (resetGyro.getAsBoolean()) {
       swerveSubsystem.resetGyro();
     }
@@ -87,24 +84,33 @@ public class DriveCommand extends CommandBase {
       swerveSubsystem.xMode();
     }
 
-    else if (Math.abs(xSpeed.getAsDouble()) > .15) xSpeedFinal = xSpeed.getAsDouble();
-    else if (Math.abs(ySpeed.getAsDouble()) > .15) ySpeedFinal = ySpeed.getAsDouble();
-    else if (Math.abs(thetaSpeed.getAsDouble()) > .15) thetaSpeedFinal = thetaSpeed.getAsDouble();
-
-    else {
-      xSpeedFinal = 0;
-      ySpeedFinal = 0;
-      thetaSpeedFinal = 0;
-    }
-      swerveSubsystem.stop();
+    else if (Math.abs(xSpeed.getAsDouble()) > .15 || 
+        Math.abs(ySpeed.getAsDouble()) > .15 || 
+        Math.abs(thetaSpeed.getAsDouble()) > .15 && 
+        !xMode.getAsBoolean()) {
+          if (thetaSpeed.getAsDouble() < 0) turnSpeed = thetaSpeed.getAsDouble();
+          else turnSpeed = thetaSpeed.getAsDouble() * .5;
       swerveSubsystem.updateModules(
         ChassisSpeeds.fromFieldRelativeSpeeds(
-          xSpeedFinal, 
-          ySpeedFinal, 
-          thetaSpeedFinal + oneEighty, 
-          swerveSubsystem.getGyro()));
+          (xSpeed.getAsDouble()), 
+          (ySpeed.getAsDouble()), 
+          (turnSpeed) + oneEighty, 
+          swerveSubsystem.getGyroRotation()),
+          speedMultiplier);
+    }
 
+    else {
+    swerveSubsystem.stop();
+      swerveSubsystem.updateModules(
+        ChassisSpeeds.fromFieldRelativeSpeeds(
+          0,
+          0,
+          oneEighty, 
+          swerveSubsystem.getGyroRotation()),
+          1);
   }
+
+}
 
   
   @Override

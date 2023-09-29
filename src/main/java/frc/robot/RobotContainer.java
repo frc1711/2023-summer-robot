@@ -6,13 +6,14 @@ package frc.robot;
 
 import frc.robot.commands.DriveCommand;
 import frc.robot.commands.IntakeCommand;
+import frc.robot.commands.Auton.PlaceAndBalanceAuton;
 import frc.robot.commands.Auton.PlaceAndTaxi;
-import frc.robot.commands.Auton.framework.ShootAuton;
-import frc.robot.commands.Auton.framework.TaxiAuton;
 import frc.robot.subsystems.Pneumatics;
 import frc.robot.subsystems.Spinner;
 import frc.robot.subsystems.Swerve;
 import frc.robot.subsystems.SwerveModule;
+
+import java.util.function.Supplier;
 
 import com.kauailabs.navx.frc.AHRS;
 
@@ -21,6 +22,7 @@ import edu.wpi.first.util.sendable.Sendable;
 import edu.wpi.first.wpilibj.PneumaticsControlModule;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 
@@ -35,6 +37,7 @@ public class RobotContainer {
   private final SwerveModule flModule, frModule, rlModule, rrModule;
   private final Translation2d flModuleTranslation, frModuleTranslation, rlModuleTranslation, rrModuleTranslation;
   private XboxController driverController, commandController;
+  private final SendableChooser<Supplier<Command>> autonChooser;
 
   public RobotContainer() {
 
@@ -90,11 +93,15 @@ public class RobotContainer {
 
     swerveSubsystem.setDefaultCommand(driveCommand);
     pneumaticsSubsystem.setDefaultCommand(intakeCommand);
+
+    autonChooser = new SendableChooser<>();
+
+    configAutonChooser();
   }
 
   /**Creates a new sendable field in the Analysis Tab of ShuffleBoard */
   public static void putSendable (String name, Sendable sendable) {
-    Shuffleboard.getTab("Analysis Tab").add(name, sendable);
+    Shuffleboard.getTab("LiveWindow").add(name, sendable);
   }
 
   /**Creates a new sendable command in the Analysis Tab of ShuffleBoard */
@@ -102,8 +109,14 @@ public class RobotContainer {
     putSendable(name, command.withName(name).ignoringDisable(canRunWhileDisabled));
   }
 
+  private void configAutonChooser () {
+    autonChooser.addOption("Place and taxi", () -> new PlaceAndTaxi(swerveSubsystem, pneumaticsSubsystem, spinnerSubsystem));
+    autonChooser.addOption("Place and Balance", () -> new PlaceAndBalanceAuton(swerveSubsystem, spinnerSubsystem, pneumaticsSubsystem));
+    putSendable("Auton Chooser", autonChooser);
+  }
+
   public Command getAutonomousCommand() {
     System.out.println("getAuton is called");
-    return new ShootAuton(spinnerSubsystem);
+    return autonChooser.getSelected().get();
   }
 }

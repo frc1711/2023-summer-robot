@@ -25,7 +25,7 @@ public class ShootAuton extends CommandBase {
   @Override
   public void initialize() {
     timer.restart();
-    spinnerSubsystem.stop();
+    // spinnerSubsystem.stop();
     System.out.println("Code Initialized");
   }
 
@@ -37,7 +37,7 @@ public class ShootAuton extends CommandBase {
 
     if (!timer.hasElapsed(1)) {
       System.out.println("If is working");
-      node = Node.HIGH;
+      node = Node.MID;
     }
 
     else {
@@ -57,6 +57,6 @@ public class ShootAuton extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return false;
+    return timer.hasElapsed(1.5);
   }
 }
