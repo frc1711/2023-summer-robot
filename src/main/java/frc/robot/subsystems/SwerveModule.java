@@ -77,15 +77,24 @@ public class SwerveModule extends SubsystemBase {
    * approximate values for the steerSpeed and the metersPerSecondToVoltage() 
    * method to calculate the driveVoltage. WIP*/
   public void update (SwerveModuleState desiredState, double speedMultiplier) {
+
     unoptimizedRotation = desiredState.angle.getDegrees();
     SwerveModuleState optimizedState = SwerveModuleState.optimize(desiredState, getEncoderRotation());
     optimizedRotation = optimizedState.angle.getDegrees();
-    double steerSpeed = steerPID.calculate(getEncoderRotation().getDegrees(), optimizedState.angle.getDegrees()); 
-    this.steerSpeed = steerSpeed;
-    steerMotor.set(steerSpeed);
-    driveSpeed = optimizedState.speedMetersPerSecond;
-    driveMotor.set(metersPerSecondToPercentage(optimizedState.speedMetersPerSecond * speedMultiplier));
-    drivePercent = metersPerSecondToPercentage(optimizedState.speedMetersPerSecond * speedMultiplier);
+
+    double encoderRotation = getEncoderRotation().getDegrees();
+    double desiredRotation = optimizedState.angle.getDegrees();
+    double angularTolerance = 5.0;
+
+    if ((Math.abs(encoderRotation - desiredRotation) < angularTolerance)) this.steerSpeed = 0;
+    else this.steerSpeed = steerPID.calculate(encoderRotation, desiredRotation);
+
+    this.drivePercent = metersPerSecondToPercentage(optimizedState.speedMetersPerSecond * speedMultiplier);
+    this.driveSpeed = optimizedState.speedMetersPerSecond;
+
+    driveMotor.set(this.drivePercent);
+    steerMotor.set(this.steerSpeed);
+
   }
   
   public void stop () {
