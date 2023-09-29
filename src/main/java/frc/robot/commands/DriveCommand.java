@@ -59,55 +59,67 @@ public class DriveCommand extends CommandBase {
   @Override
   public void execute() {
 
-    if (slowMode.getAsBoolean()) {
-      speedMultiplier = .25;
-    }
-    else { 
-      speedMultiplier = 1;
-    }
+    double transformedXSpeed = xSpeed.getAsDouble();
+    double transformedYSpeed = ySpeed.getAsDouble();
+    double transformedThetaSpeed = thetaSpeed.getAsDouble();
 
-    if (turnAround.getAsBoolean() && !wasOneEighty) { 
+    double xDeadband = 0.15;
+    double yDeadband = 0.15;
+    double thetaDeadband = 0.15;
+
+    if (transformedXSpeed < xDeadband) transformedXSpeed = 0;
+    if (transformedYSpeed < yDeadband) transformedYSpeed = 0;
+    if (transformedThetaSpeed < thetaDeadband) transformedThetaSpeed = 0;
+
+    this.speedMultiplier = slowMode.getAsBoolean() ? 0.25 : 1;
+
+    if (turnAround.getAsBoolean() && !wasOneEighty) {
+
       timer.reset();
       oneEighty = 1;
       wasOneEighty = true;
-    }
-    else if (oneEighty != 0 && timer.hasElapsed(1)) {
+
+    } else if (oneEighty != 0 && timer.hasElapsed(1)) {
+
       oneEighty = 0;
       wasOneEighty = false;
+
     }
 
-    if (resetGyro.getAsBoolean()) {
-      swerveSubsystem.resetGyro();
-    }
+    if (resetGyro.getAsBoolean()) swerveSubsystem.resetGyro();
 
-    if (xMode.getAsBoolean()) {
-      swerveSubsystem.xMode();
-    }
+    if (xMode.getAsBoolean()) swerveSubsystem.xMode();
+    else if (
+      Math.abs(transformedXSpeed) > .15 ||
+      Math.abs(transformedYSpeed) > .15 ||
+      Math.abs(transformedThetaSpeed) > .15
+    ) {
 
-    else if (Math.abs(xSpeed.getAsDouble()) > .15 || 
-        Math.abs(ySpeed.getAsDouble()) > .15 || 
-        Math.abs(thetaSpeed.getAsDouble()) > .15 && 
-        !xMode.getAsBoolean()) {
-          if (thetaSpeed.getAsDouble() < 0) turnSpeed = thetaSpeed.getAsDouble();
-          else turnSpeed = thetaSpeed.getAsDouble() * .5;
+      this.turnSpeed = transformedThetaSpeed;
+
       swerveSubsystem.updateModules(
         ChassisSpeeds.fromFieldRelativeSpeeds(
-          (xSpeed.getAsDouble()), 
-          (ySpeed.getAsDouble()), 
-          (turnSpeed) + oneEighty, 
-          swerveSubsystem.getGyroRotation()),
-          speedMultiplier);
-    }
+          transformedXSpeed,
+          transformedYSpeed,
+          this.turnSpeed + oneEighty,
+          swerveSubsystem.getGyroRotation()
+        ),
+        speedMultiplier
+      );
 
-    else {
-    swerveSubsystem.stop();
+    } else {
+
+      swerveSubsystem.stop();
       swerveSubsystem.updateModules(
         ChassisSpeeds.fromFieldRelativeSpeeds(
           0,
           0,
           oneEighty, 
-          swerveSubsystem.getGyroRotation()),
-          1);
+          swerveSubsystem.getGyroRotation()
+        ),
+        1
+      );
+
   }
 
 }
