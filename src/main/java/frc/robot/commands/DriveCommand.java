@@ -67,9 +67,9 @@ public class DriveCommand extends CommandBase {
     double yDeadband = 0.15;
     double thetaDeadband = 0.15;
 
-    if (transformedXSpeed < xDeadband) transformedXSpeed = 0;
-    if (transformedYSpeed < yDeadband) transformedYSpeed = 0;
-    if (transformedThetaSpeed < thetaDeadband) transformedThetaSpeed = 0;
+    if (Math.abs(transformedXSpeed) < xDeadband) transformedXSpeed = 0;
+    if (Math.abs(transformedYSpeed) < yDeadband) transformedYSpeed = 0;
+    if (Math.abs(transformedThetaSpeed) < thetaDeadband) transformedThetaSpeed = 0;
 
     this.speedMultiplier = slowMode.getAsBoolean() ? 0.25 : 1;
 
