@@ -6,16 +6,18 @@ package frc.robot.util;
 
 /** Add your docs here. */
 public class AccelerationCurve {
-    
-    public AccelerationCurve () {
-        
-    }
-
-    static int isNegative;
-    public static double apply (double input) {
-        if (input < 0) isNegative = -1;
-        else isNegative = 1;
-        input = Math.abs(input);
-        return Math.sqrt(input) * isNegative;
-    }
+	
+	static int isNegative;
+	
+	public AccelerationCurve () {}
+	
+	public static double apply (double input) {
+		
+		if (input < 0) isNegative = -1;
+		else isNegative = 1;
+		input = Math.abs(input);
+		return Math.sqrt(input) * isNegative;
+		
+	}
+	
 }
