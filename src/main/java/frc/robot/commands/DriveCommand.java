@@ -11,11 +11,29 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.Swerve;
-import frc.robot.util.AccelerationCurve;
+import frc.robot.util.ControlsUtilities;
 
 public class DriveCommand extends CommandBase {
-  
+
+  static final double X_DEADBAND = 0.10;
+
+  static final double Y_DEADBAND = 0.10;
+
+  static final double THETA_DEADBAND = 0.10;
+
+  static final double X_MAX_ACCELERATION = 0.02;
+
+  static final double Y_MAX_ACCELERATION = 0.02;
+
+  static final double THETA_MAX_ACCELERATION = 0.05;
+
   Swerve swerveSubsystem;
+
+  double currentXSpeed;
+
+  double currentYSpeed;
+
+  double currentThetaSpeed;
 
   Timer timer;
 
@@ -41,7 +59,10 @@ public class DriveCommand extends CommandBase {
     this.resetGyro = resetGyro;
     this.turnAround = turnAround;
     this.xMode = xMode;
-
+    this.currentXSpeed = 0;
+    this.currentYSpeed = 0;
+    this.currentThetaSpeed = 0;
+    
     timer = new Timer();
 
     addRequirements(swerveSubsystem);
@@ -59,17 +80,40 @@ public class DriveCommand extends CommandBase {
   @Override
   public void execute() {
 
-    double transformedXSpeed = xSpeed.getAsDouble();
-    double transformedYSpeed = ySpeed.getAsDouble();
-    double transformedThetaSpeed = thetaSpeed.getAsDouble();
+    double nextXSpeed = xSpeed.getAsDouble();
+    double nextYSpeed = ySpeed.getAsDouble();
+    double nextThetaSpeed = thetaSpeed.getAsDouble();
 
-    double xDeadband = 0.15;
-    double yDeadband = 0.15;
-    double thetaDeadband = 0.15;
+    // Apply individual deadbands.
+    nextXSpeed = ControlsUtilities.applyDeadband(nextXSpeed, DriveCommand.X_DEADBAND);
+    nextYSpeed = ControlsUtilities.applyDeadband(nextYSpeed, DriveCommand.Y_DEADBAND);
+    nextThetaSpeed = ControlsUtilities.applyDeadband(nextThetaSpeed, DriveCommand.THETA_DEADBAND);
 
-    if (Math.abs(transformedXSpeed) < xDeadband) transformedXSpeed = 0;
-    if (Math.abs(transformedYSpeed) < yDeadband) transformedYSpeed = 0;
-    if (Math.abs(transformedThetaSpeed) < thetaDeadband) transformedThetaSpeed = 0;
+    double absoluteNextXSpeed = Math.abs(nextXSpeed);
+    double absoluteNextYSpeed = Math.abs(nextYSpeed);
+    double absoluteNextThetaSpeed = Math.abs(nextThetaSpeed);
+
+    // Apply global deadband.
+    if (
+      absoluteNextXSpeed < DriveCommand.X_DEADBAND &&
+      absoluteNextYSpeed < DriveCommand.Y_DEADBAND &&
+      absoluteNextThetaSpeed < DriveCommand.THETA_DEADBAND
+    ) {
+
+      nextXSpeed = 0;
+      nextYSpeed = 0;
+      nextThetaSpeed = 0;
+
+    } else {
+
+      // Enforce maximum change in acceleration.
+      nextXSpeed = ControlsUtilities.enforceMaximumPositiveDelta(currentXSpeed, nextXSpeed, X_MAX_ACCELERATION);
+      nextYSpeed = ControlsUtilities.enforceMaximumPositiveDelta(currentYSpeed, nextYSpeed, Y_MAX_ACCELERATION);
+      nextThetaSpeed = ControlsUtilities.enforceMaximumPositiveDelta(currentThetaSpeed, nextThetaSpeed, THETA_MAX_ACCELERATION);
+
+    }
+
+
 
     this.speedMultiplier = slowMode.getAsBoolean() ? 0.25 : 1;
 
@@ -90,24 +134,30 @@ public class DriveCommand extends CommandBase {
 
     if (xMode.getAsBoolean()) swerveSubsystem.xMode();
     else if (
-      Math.abs(transformedXSpeed) > .15 ||
-      Math.abs(transformedYSpeed) > .15 ||
-      Math.abs(transformedThetaSpeed) > .15
+      Math.abs(nextXSpeed) > .15 ||
+      Math.abs(nextYSpeed) > .15 ||
+      Math.abs(nextThetaSpeed) > .15
     ) {
 
-      this.turnSpeed = transformedThetaSpeed;
+      this.currentXSpeed = nextXSpeed;
+      this.currentYSpeed = nextYSpeed;
+      this.currentThetaSpeed = nextThetaSpeed;
 
       swerveSubsystem.updateModules(
         ChassisSpeeds.fromFieldRelativeSpeeds(
-          transformedXSpeed,
-          transformedYSpeed,
-          this.turnSpeed + oneEighty,
+          this.currentXSpeed,
+          this.currentYSpeed,
+          this.currentThetaSpeed + oneEighty,
           swerveSubsystem.getGyroRotation()
         ),
         speedMultiplier
       );
 
     } else {
+
+      this.currentXSpeed = nextXSpeed;
+      this.currentYSpeed = nextYSpeed;
+      this.currentThetaSpeed = nextThetaSpeed;
 
       swerveSubsystem.stop();
       swerveSubsystem.updateModules(
