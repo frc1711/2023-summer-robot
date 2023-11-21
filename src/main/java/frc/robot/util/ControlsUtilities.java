@@ -24,6 +24,18 @@ public class ControlsUtilities {
 		return Math.abs(input) < deadband ? 0 : input;
 
 	}
+
+	public static double applyCircularDeadband (double xInput, double yInput, double deadband, boolean valueToRetrieve) {
+
+		double hypotenuse = Math.sqrt(Math.pow(xInput, 2) + Math.pow(yInput, 2));
+
+		if (Math.abs(hypotenuse) < deadband) {
+			if (valueToRetrieve) return xInput;
+			else return yInput;
+		}
+		
+		else return 0;
+	}
     
 	/**
 	 * Returns the new value so long as its delta from the old value does not
