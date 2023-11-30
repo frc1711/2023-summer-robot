@@ -24,6 +24,8 @@ public class Kinematics extends SubsystemBase {
         public Kinematics (AHRS gyro, StartPosition startPosition) {
             this.gyro = gyro;
             this.startPosition = startPosition;
+            xAccelTimer = new Timer();
+            yAccelTimer = new Timer();
             totalTimer = new Timer();
             xAccelTimer.start();
             yAccelTimer.start();
