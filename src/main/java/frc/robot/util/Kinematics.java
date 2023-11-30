@@ -7,8 +7,8 @@ package frc.robot.util;
 import com.kauailabs.navx.frc.AHRS;
 
 import edu.wpi.first.math.Nat;
-import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.numbers.N2;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
@@ -43,16 +43,20 @@ public class Kinematics extends SubsystemBase {
             }
         }
 
-        public boolean directionHasChanged (Vector vectorOne, Vector vectorTwo) {
+        public boolean directionHasChanged (Vector<N2> vectorOne, Vector<N2> vectorTwo) {
             return getDirectionChange(vectorOne, vectorTwo) >= 1;
         }
 
-        public double getVelocityX () {
-            return getRobotAccelerationX() * xAccelTimer.get() + 0; //TODO: find constant variable through testing(?)
+        private double startVelocityX;
+        public double getVelocityX (double startVelocityX) {
+            this.startVelocityX = startVelocityX;
+            return getRobotAccelerationX() * xAccelTimer.get() + startVelocityX; //TODO: find constant variable through testing(?)
         }
 
-        public double getVelocityY () {
-            return getRobotAccelerationY() * yAccelTimer.get() + 0; //TODO: find unknown constant variable
+        private double startVelocityY;
+        public double getVelocityY (double startVelocityY) {
+            this.startVelocityY = startVelocityY;
+            return getRobotAccelerationY() * yAccelTimer.get() + startVelocityY; //TODO: find unknown constant variable
         }
 
         public double getRobotAccelerationX () {
@@ -63,17 +67,17 @@ public class Kinematics extends SubsystemBase {
             return gyro.getWorldLinearAccelY();
         }
 
-        private double totalDisplacementY;
+        private double displacementY;
         public double getRobotDisplacementY () {
-            return .5 * getRobotAccelerationY() * Math.pow(yAccelTimer.get(), 2) + 0 * yAccelTimer.get() + startPosition.yVariable; //TODO: Find unknown constant either through testing or math
+            return .5 * getRobotAccelerationY() * Math.pow(yAccelTimer.get(), 2) + startVelocityY * yAccelTimer.get() + startPosition.yVariable; //TODO: Find unknown constant either through testing or math
         }
 
-        private double totalDisplacementX;
+        private double displacementX;
         public double getRobotDisplacementX () {
-            return .5 * getRobotAccelerationX() * Math.pow(xAccelTimer.get(), 2) + 0 * xAccelTimer.get() + startPosition.xVariable; //TODO: Find unknown constant either through testing or math
+            return .5 * getRobotAccelerationX() * Math.pow(xAccelTimer.get(), 2) + startVelocityX * xAccelTimer.get() + startPosition.xVariable; //TODO: Find unknown constant either through testing or math
         }
 
-        public Vector getDisplacementVector () {
+        public Vector<N2> getDisplacementVector () {
             return new Vector<>(Nat.N2(), getRobotAccelerationX(), getRobotDisplacementY());
         }
 
@@ -81,19 +85,19 @@ public class Kinematics extends SubsystemBase {
             xAccelTimer.reset();
         }
         
-        public Vector getAccelerationVector() {
+        public Vector<N2> getAccelerationVector() {
             return new Vector<>(
                 Nat.N2(),
                 getRobotAccelerationX(),
                 getRobotAccelerationY());
         }
 
-        public double getDirectionChange (Vector vectorOne, Vector vectorTwo) {
+        public double getDirectionChange (Vector<N2> vectorOne, Vector<N2> vectorTwo) {
             return Vector.getAngle(vectorTwo) - Vector.getAngle(vectorOne);
         }
 
-        Vector position;
-        public void updateRobotPosition (Vector vectorOne, Vector vectorTwo) {
+        Vector<N2> position;
+        public void updateRobotPosition (Vector<N2> vectorOne, Vector<N2> vectorTwo) {
             if (vectorOne == null) vectorOne = new Vector<>(Nat.N2(), 0, 0);
             if (vectorTwo == null) vectorTwo = new Vector<>(Nat.N2(), 0, 0);
             position = vectorOne.add(vectorTwo);
@@ -103,8 +107,8 @@ public class Kinematics extends SubsystemBase {
             return new Translation2d(getRobotDisplacementX(), getRobotDisplacementY());
         }
 
-        Vector vectorOne = null;
-        Vector vectorTwo = null;   
+        Vector<N2> vectorOne = null;
+        Vector<N2> vectorTwo = null;   
         boolean oneHasBeenSet = false;
         boolean twoHasBeenSet = false;
         @Override
