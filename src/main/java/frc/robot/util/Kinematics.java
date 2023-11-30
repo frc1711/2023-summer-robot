@@ -24,8 +24,6 @@ public class Kinematics extends SubsystemBase {
         public Kinematics (AHRS gyro, StartPosition startPosition) {
             this.gyro = gyro;
             this.startPosition = startPosition;
-            xAccelTimer = new Timer();
-            yAccelTimer = new Timer();
             totalTimer = new Timer();
             xAccelTimer.start();
             yAccelTimer.start();
@@ -67,12 +65,10 @@ public class Kinematics extends SubsystemBase {
             return gyro.getWorldLinearAccelY();
         }
 
-        private double displacementY;
         public double getRobotDisplacementY () {
             return .5 * getRobotAccelerationY() * Math.pow(yAccelTimer.get(), 2) + startVelocityY * yAccelTimer.get() + startPosition.yVariable; //TODO: Find unknown constant either through testing or math
         }
 
-        private double displacementX;
         public double getRobotDisplacementX () {
             return .5 * getRobotAccelerationX() * Math.pow(xAccelTimer.get(), 2) + startVelocityX * xAccelTimer.get() + startPosition.xVariable; //TODO: Find unknown constant either through testing or math
         }
@@ -81,8 +77,8 @@ public class Kinematics extends SubsystemBase {
             return new Vector<>(Nat.N2(), getRobotAccelerationX(), getRobotDisplacementY());
         }
 
-        private void resetTimerX () {
-            xAccelTimer.reset();
+        private void resetTimer () {
+            totalTimer.reset();
         }
         
         public Vector<N2> getAccelerationVector() {
