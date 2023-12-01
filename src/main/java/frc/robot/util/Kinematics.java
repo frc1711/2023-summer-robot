@@ -47,18 +47,6 @@ public class Kinematics extends SubsystemBase {
             return getDirectionChange(vectorOne, vectorTwo) >= 1;
         }
 
-        private double startVelocityX;
-        public double getVelocityX (double startVelocityX) {
-            this.startVelocityX = startVelocityX;
-            return getRobotAccelerationX() * xAccelTimer.get() + startVelocityX; //TODO: find constant variable through testing(?)
-        }
-
-        private double startVelocityY;
-        public double getVelocityY (double startVelocityY) {
-            this.startVelocityY = startVelocityY;
-            return getRobotAccelerationY() * yAccelTimer.get() + startVelocityY; //TODO: find unknown constant variable
-        }
-
         public double getRobotAccelerationX () {
             return gyro.getWorldLinearAccelX();
         }
@@ -75,12 +63,20 @@ public class Kinematics extends SubsystemBase {
             return .5 * getRobotAccelerationX() * Math.pow(xAccelTimer.get(), 2) + startVelocityX * xAccelTimer.get() + startPosition.xVariable; //TODO: Find unknown constant either through testing or math
         }
 
-        public Vector<N2> getDisplacementVector () {
-            return new Vector<>(Nat.N2(), getRobotAccelerationX(), getRobotDisplacementY());
+        private double startVelocityX;
+        public double getVelocityX (double startVelocityX) {
+            this.startVelocityX = startVelocityX;
+            return getRobotAccelerationX() * xAccelTimer.get() + startVelocityX; //TODO: find constant variable through testing(?)
         }
 
-        private void resetTimer () {
-            totalTimer.reset();
+        private double startVelocityY;
+        public double getVelocityY (double startVelocityY) {
+            this.startVelocityY = startVelocityY;
+            return getRobotAccelerationY() * yAccelTimer.get() + startVelocityY; //TODO: find unknown constant variable
+        }
+
+        public Vector<N2> getDisplacementVector () {
+            return new Vector<>(Nat.N2(), getRobotAccelerationX(), getRobotDisplacementY());
         }
         
         public Vector<N2> getAccelerationVector() {
@@ -128,6 +124,11 @@ public class Kinematics extends SubsystemBase {
                 oneHasBeenSet = false;
                 twoHasBeenSet = false;
                 totalTimer.reset();
+            }
+
+            if (directionHasChanged(vectorOne, vectorTwo)) {
+                xAccelTimer.reset();
+                yAccelTimer.reset();
             }
         }
     }
