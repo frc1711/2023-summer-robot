@@ -98,7 +98,7 @@ public class Kinematics extends SubsystemBase {
         }
 
         public Translation2d getRobotRelativePosition () {
-            return new Translation2d(getRobotDisplacementX(), getRobotDisplacementY());
+            return new Translation2d(position.getX(), position.getY());
         }
 
         Vector<N2> vectorOne = null;
