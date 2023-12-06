@@ -4,11 +4,13 @@
 
 package frc.robot.commands.Auton.framework;
 
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.Pneumatics;
 import frc.robot.subsystems.Swerve;
+import frc.robot.util.Kinematics;
 
 public class BalanceAuton extends CommandBase {
   
@@ -17,10 +19,10 @@ public class BalanceAuton extends CommandBase {
   Timer timer;
   Pneumatics pneumaticsSubsystem;
 
-  public BalanceAuton(Swerve swerveSubsystem, Pneumatics pneumaticsSubsystem) {
+  public BalanceAuton(Swerve swerveSubsystem, Pneumatics pneumaticsSubsystem, Kinematics kinematics) {
     this.swerveSubsystem = swerveSubsystem;
     this.pneumaticsSubsystem = pneumaticsSubsystem;
-    autonDriveCommand = new AutonDrive(swerveSubsystem, 3, .25, 0, 0); //TODO: determine these values
+    autonDriveCommand = new AutonDrive(swerveSubsystem, kinematics, new Translation2d(), 0, 0); //TODO: determine these values
     timer = new Timer();
     addRequirements(swerveSubsystem, pneumaticsSubsystem);
   }

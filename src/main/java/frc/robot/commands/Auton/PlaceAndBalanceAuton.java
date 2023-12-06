@@ -10,14 +10,15 @@ import frc.robot.commands.Auton.framework.ShootAuton;
 import frc.robot.subsystems.Pneumatics;
 import frc.robot.subsystems.Spinner;
 import frc.robot.subsystems.Swerve;
+import frc.robot.util.Kinematics;
 
 public class PlaceAndBalanceAuton extends SequentialCommandGroup {
 
-  public PlaceAndBalanceAuton(Swerve swerveSubsystem, Spinner spinnerSubsystem, Pneumatics pneumaticsSubsystem) {
+  public PlaceAndBalanceAuton(Swerve swerveSubsystem, Spinner spinnerSubsystem, Pneumatics pneumaticsSubsystem, Kinematics kinematics) {
     
     super (
       new ShootAuton(spinnerSubsystem),
-      new BalanceAuton(swerveSubsystem, pneumaticsSubsystem)
+      new BalanceAuton(swerveSubsystem, pneumaticsSubsystem, kinematics)
     );
   }
 
