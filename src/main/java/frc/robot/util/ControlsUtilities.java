@@ -25,16 +25,9 @@ public class ControlsUtilities {
 
 	}
 
-	public static double applyCircularDeadband (double xInput, double yInput, double deadband, boolean valueToRetrieve) {
+	public static boolean exceedsCircularDeadband (double xInput, double yInput, double deadband) {
 
-		double hypotenuse = Math.sqrt(Math.pow(xInput, 2) + Math.pow(yInput, 2));
-
-		if (Math.abs(hypotenuse) < deadband) {
-			if (valueToRetrieve) return xInput;
-			else return yInput;
-		}
-		
-		else return 0;
+		return Math.abs(Math.sqrt(Math.pow(xInput, 2) + Math.pow(yInput, 2))) < deadband;
 	}
     
 	/**
