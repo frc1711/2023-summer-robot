@@ -94,26 +94,9 @@ public class DriveCommand extends CommandBase {
     double absoluteNextThetaSpeed = Math.abs(nextThetaSpeed);
 
     // Apply global deadband.
-    if (
-      absoluteNextXSpeed < DriveCommand.X_DEADBAND &&
-      absoluteNextYSpeed < DriveCommand.Y_DEADBAND &&
-      absoluteNextThetaSpeed < DriveCommand.THETA_DEADBAND
-    ) {
-
-      nextXSpeed = 0;
-      nextYSpeed = 0;
-      nextThetaSpeed = 0;
-
-    } else {
-
-      // Enforce maximum change in acceleration.
-      nextXSpeed = ControlsUtilities.enforceMaximumPositiveDelta(currentXSpeed, nextXSpeed, X_MAX_ACCELERATION);
-      nextYSpeed = ControlsUtilities.enforceMaximumPositiveDelta(currentYSpeed, nextYSpeed, Y_MAX_ACCELERATION);
-      nextThetaSpeed = ControlsUtilities.enforceMaximumPositiveDelta(currentThetaSpeed, nextThetaSpeed, THETA_MAX_ACCELERATION);
-
-    }
-
-
+    nextXSpeed = absoluteNextXSpeed < DriveCommand.X_DEADBAND ?  0 : ControlsUtilities.enforceMaximumPositiveDelta(currentXSpeed, nextXSpeed, X_MAX_ACCELERATION);
+    nextYSpeed = absoluteNextYSpeed < DriveCommand.Y_DEADBAND ?  0 : ControlsUtilities.enforceMaximumPositiveDelta(currentYSpeed, nextYSpeed, Y_MAX_ACCELERATION);
+    nextThetaSpeed = absoluteNextThetaSpeed < DriveCommand.THETA_DEADBAND ?  0 : ControlsUtilities.enforceMaximumPositiveDelta(currentThetaSpeed, nextThetaSpeed, THETA_MAX_ACCELERATION);
 
     this.speedMultiplier = slowMode.getAsBoolean() ? 0.25 : 1;
 

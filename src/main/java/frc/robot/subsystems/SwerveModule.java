@@ -15,7 +15,6 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.util.AccelerationCurve;
 
 public class SwerveModule extends SubsystemBase {
 	
@@ -48,7 +47,7 @@ public class SwerveModule extends SubsystemBase {
 	 * wheel, to calculate an approximate voltage value when given a speed in
 	 * meters per second. 
 	 */
-	private double maxSpeed = (5500 / 60.) * .1 / 10;
+	private double maxSpeed = (5500 / 60.) * .1 / 2;
 	
 	double finalAngle;
 	

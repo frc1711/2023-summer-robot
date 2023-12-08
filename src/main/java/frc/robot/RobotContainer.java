@@ -12,6 +12,9 @@ import frc.robot.subsystems.Pneumatics;
 import frc.robot.subsystems.Spinner;
 import frc.robot.subsystems.Swerve;
 import frc.robot.subsystems.SwerveModule;
+import frc.robot.util.Kinematics;
+import frc.robot.util.Kinematics.StartPosition;
+
 import java.util.function.Supplier;
 import com.kauailabs.navx.frc.AHRS;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -29,6 +32,7 @@ public class RobotContainer {
 	private final Pneumatics pneumaticsSubsystem;
 	private final AHRS gyro;
 	private final Spinner spinnerSubsystem;
+	private final Kinematics kinematics;
 	private final DriveCommand driveCommand;
 	private final IntakeCommand intakeCommand;
 	private final SwerveModule flModule;
@@ -42,6 +46,7 @@ public class RobotContainer {
 	private XboxController driverController;
 	private XboxController commandController;
 	private final SendableChooser<Supplier<Command>> autonChooser;
+	private final SendableChooser<Supplier<StartPosition>> startPositionChooser;
 	
 	public RobotContainer() {
 		
@@ -122,9 +127,13 @@ public class RobotContainer {
 		pneumaticsSubsystem.setDefaultCommand(intakeCommand);
 		
 		autonChooser = new SendableChooser<>();
+		startPositionChooser = new SendableChooser<>();
 		
 		configAutonChooser();
+		configStartPositionChoice();
 		
+		
+		kinematics = new Kinematics(gyro, startPositionChooser.getSelected().get());
 	}
 	
 	/**
@@ -151,6 +160,27 @@ public class RobotContainer {
 		);
 		
 	}
+
+	private void configStartPositionChoice () {
+		startPositionChooser.addOption("Wireguard Side Position", () ->
+			StartPosition.WIREGUARD
+		);
+		
+		startPositionChooser.addOption("Inside Position", () ->
+			StartPosition.INSIDE
+		);
+
+		startPositionChooser.addOption("Balance (Middle) Position", () ->
+			StartPosition.BALANCE
+		);
+		
+		putSendable("Start Position Chooser", startPositionChooser);
+	}
+
+	private void configAutonPage() {
+
+
+	}
 	
 	private void configAutonChooser() {
 		
@@ -166,7 +196,8 @@ public class RobotContainer {
 			new PlaceAndBalanceAuton(
 				swerveSubsystem,
 				spinnerSubsystem,
-				pneumaticsSubsystem
+				pneumaticsSubsystem, 
+				kinematics
 			)
 		);
 		
