@@ -24,6 +24,11 @@ public class ControlsUtilities {
 		return Math.abs(input) < deadband ? 0 : input;
 
 	}
+
+	public static boolean exceedsCircularDeadband (double xInput, double yInput, double deadband) {
+
+		return Math.abs(Math.sqrt(Math.pow(xInput, 2) + Math.pow(yInput, 2))) < deadband;
+	}
     
 	/**
 	 * Returns the new value so long as its delta from the old value does not
