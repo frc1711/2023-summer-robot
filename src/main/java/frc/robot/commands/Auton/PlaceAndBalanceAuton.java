@@ -4,6 +4,8 @@
 
 package frc.robot.commands.Auton;
 
+import com.kauailabs.navx.frc.AHRS;
+
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.commands.Auton.framework.BalanceAuton;
 import frc.robot.commands.Auton.framework.ShootAuton;
@@ -14,11 +16,11 @@ import frc.robot.util.Kinematics;
 
 public class PlaceAndBalanceAuton extends SequentialCommandGroup {
 
-  public PlaceAndBalanceAuton(Swerve swerveSubsystem, Spinner spinnerSubsystem, Pneumatics pneumaticsSubsystem, Kinematics kinematics) {
+  public PlaceAndBalanceAuton(Swerve swerveSubsystem, Spinner spinnerSubsystem, Pneumatics pneumaticsSubsystem, Kinematics kinematics, AHRS gyro) {
     
     super (
       new ShootAuton(spinnerSubsystem),
-      new BalanceAuton(swerveSubsystem, pneumaticsSubsystem, kinematics)
+      new BalanceAuton(swerveSubsystem, pneumaticsSubsystem, kinematics, gyro)
     );
   }
 

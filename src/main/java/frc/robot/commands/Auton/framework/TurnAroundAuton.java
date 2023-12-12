@@ -4,6 +4,8 @@
 
 package frc.robot.commands.Auton.framework;
 
+import com.kauailabs.navx.frc.AHRS;
+
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
@@ -11,14 +13,8 @@ import frc.robot.subsystems.Swerve;
 import frc.robot.util.Kinematics;
 
 public class TurnAroundAuton extends SequentialCommandGroup {
-  
-  Swerve swerveSubsystem;
 
-  AutonDrive autonDrive;
-
-  Timer timer;
-
-  public TurnAroundAuton(Swerve swerveSubsystem, Kinematics kinematics) {
-    super (new AutonDrive(swerveSubsystem, kinematics, new Translation2d(), 0, 0)); //TODO: Determine these values
+  public TurnAroundAuton(Swerve swerveSubsystem, Kinematics kinematics, AHRS gyro) {
+    super (new AutonDrive(swerveSubsystem, kinematics, new Translation2d(), gyro, 180, 3)); //TODO: Determine these values
   }
 }

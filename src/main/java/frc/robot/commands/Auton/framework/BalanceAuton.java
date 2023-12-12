@@ -4,6 +4,8 @@
 
 package frc.robot.commands.Auton.framework;
 
+import com.kauailabs.navx.frc.AHRS;
+
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.Timer;
@@ -15,14 +17,16 @@ import frc.robot.util.Kinematics;
 public class BalanceAuton extends CommandBase {
   
   Swerve swerveSubsystem;
+  AHRS gyro;
   AutonDrive autonDriveCommand;
   Timer timer;
   Pneumatics pneumaticsSubsystem;
 
-  public BalanceAuton(Swerve swerveSubsystem, Pneumatics pneumaticsSubsystem, Kinematics kinematics) {
+  public BalanceAuton(Swerve swerveSubsystem, Pneumatics pneumaticsSubsystem, Kinematics kinematics, AHRS gyro) {
     this.swerveSubsystem = swerveSubsystem;
     this.pneumaticsSubsystem = pneumaticsSubsystem;
-    autonDriveCommand = new AutonDrive(swerveSubsystem, kinematics, new Translation2d(), 0, 0); //TODO: determine these values
+    this.gyro = gyro;
+    autonDriveCommand = new AutonDrive(swerveSubsystem, kinematics, new Translation2d(), gyro, 0, 10); //TODO: determine these values
     timer = new Timer();
     addRequirements(swerveSubsystem, pneumaticsSubsystem);
   }

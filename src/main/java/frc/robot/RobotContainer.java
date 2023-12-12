@@ -197,7 +197,8 @@ public class RobotContainer {
 				swerveSubsystem,
 				spinnerSubsystem,
 				pneumaticsSubsystem, 
-				kinematics
+				kinematics,
+				gyro
 			)
 		);
 		
