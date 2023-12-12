@@ -7,20 +7,17 @@ package frc.robot.commands.Auton.framework;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.subsystems.Pneumatics;
 import frc.robot.subsystems.Swerve;
 
 public class TaxiAuton extends CommandBase {
   
-  Pneumatics pneumaticsSubsystem;
   Swerve swerveSubsystem;
   Timer timer;
 
-  public TaxiAuton(Swerve swerveSubsystem, Pneumatics pneumaticsSubsystem) {
+  public TaxiAuton(Swerve swerveSubsystem) {
     this.swerveSubsystem = swerveSubsystem;
     this.timer = new Timer();
-    this.pneumaticsSubsystem = pneumaticsSubsystem;
-    addRequirements(swerveSubsystem, pneumaticsSubsystem);
+    addRequirements(swerveSubsystem);
   }
 
   @Override
@@ -28,7 +25,6 @@ public class TaxiAuton extends CommandBase {
     /**Restarts the timer which is used to run the auton cycle. */
     timer.restart();
     swerveSubsystem.stop();
-    pneumaticsSubsystem.enableSubsystem();
   }
 
   @Override

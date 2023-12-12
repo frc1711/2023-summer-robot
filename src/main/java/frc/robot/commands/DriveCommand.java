@@ -19,6 +19,8 @@ public class DriveCommand extends CommandBase {
 
   static final double Y_DEADBAND = 0.10;
 
+  static final double LEFT_STICK_DEADBAND = 0.10;
+
   static final double THETA_DEADBAND = 0.10;
 
   static final double X_MAX_ACCELERATION = 0.02;
@@ -85,8 +87,8 @@ public class DriveCommand extends CommandBase {
     double nextThetaSpeed = thetaSpeed.getAsDouble();
 
     // Apply individual deadbands.
-    nextXSpeed = ControlsUtilities.applyDeadband(nextXSpeed, DriveCommand.X_DEADBAND);
-    nextYSpeed = ControlsUtilities.applyDeadband(nextYSpeed, DriveCommand.Y_DEADBAND);
+    nextXSpeed = ControlsUtilities.exceedsCircularDeadband(nextXSpeed, nextYSpeed, DriveCommand.LEFT_STICK_DEADBAND) ? 0 : nextXSpeed;
+    nextYSpeed = ControlsUtilities.exceedsCircularDeadband(nextXSpeed, nextYSpeed, DriveCommand.LEFT_STICK_DEADBAND) ? 0 : nextYSpeed;
     nextThetaSpeed = ControlsUtilities.applyDeadband(nextThetaSpeed, DriveCommand.THETA_DEADBAND);
 
     double absoluteNextXSpeed = Math.abs(nextXSpeed);

@@ -19,7 +19,7 @@ public class PlaceAndTaxi extends SequentialCommandGroup {
   public PlaceAndTaxi(Swerve swerveSubsystem, Pneumatics pneumaticsSubsystem, Spinner spinnerSubsystem) {
     super (
       new ShootAuton(spinnerSubsystem),
-      new TaxiAuton(swerveSubsystem, pneumaticsSubsystem)
+      new TaxiAuton(swerveSubsystem)
     );
   }
 }

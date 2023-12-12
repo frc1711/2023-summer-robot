@@ -8,6 +8,7 @@ import frc.robot.commands.DriveCommand;
 import frc.robot.commands.IntakeCommand;
 import frc.robot.commands.Auton.PlaceAndBalanceAuton;
 import frc.robot.commands.Auton.PlaceAndTaxi;
+import frc.robot.commands.Auton.framework.TaxiAuton;
 import frc.robot.subsystems.Pneumatics;
 import frc.robot.subsystems.Spinner;
 import frc.robot.subsystems.Swerve;
@@ -26,11 +27,8 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 public class RobotContainer {
 	
 	private final Swerve swerveSubsystem;
-	private final Pneumatics pneumaticsSubsystem;
 	private final AHRS gyro;
-	private final Spinner spinnerSubsystem;
 	private final DriveCommand driveCommand;
-	private final IntakeCommand intakeCommand;
 	private final SwerveModule flModule;
 	private final SwerveModule frModule;
 	private final SwerveModule rlModule;
@@ -90,12 +88,6 @@ public class RobotContainer {
 			gyro
 		);
 		
-		pneumaticsSubsystem = new Pneumatics(new PneumaticsControlModule(13));
-		spinnerSubsystem = new Spinner(
-			IDMaps.leftSpinnerMotorID,
-			IDMaps.rightSpinnerMotorID
-		);
-		
 		driveCommand = new DriveCommand(
 			swerveSubsystem, 
 			() -> driverController.getLeftY(), 
@@ -107,20 +99,8 @@ public class RobotContainer {
 			() -> driverController.getStartButton()
 		);
 		
-		intakeCommand = new IntakeCommand(
-			pneumaticsSubsystem, 
-			spinnerSubsystem, 
-			() -> driverController.getLeftBumperPressed(),
-			() -> driverController.getLeftBumperReleased(),
-			() -> driverController.getAButton(),
-			() -> driverController.getBButton(),
-			() -> driverController.getYButton(),
-			() -> driverController.getRightBumper()
-		);
-		
 		swerveSubsystem.setDefaultCommand(driveCommand);
-		pneumaticsSubsystem.setDefaultCommand(intakeCommand);
-		
+
 		autonChooser = new SendableChooser<>();
 		
 		configAutonChooser();
@@ -154,20 +134,7 @@ public class RobotContainer {
 	
 	private void configAutonChooser() {
 		
-		autonChooser.addOption("Place and taxi", () ->
-			new PlaceAndTaxi(
-				swerveSubsystem,
-				pneumaticsSubsystem,
-				spinnerSubsystem
-			)
-		);
-		
-		autonChooser.addOption("Place and Balance", () ->
-			new PlaceAndBalanceAuton(
-				swerveSubsystem,
-				spinnerSubsystem,
-				pneumaticsSubsystem
-			)
+		autonChooser.addOption("Taxi", () -> new TaxiAuton(swerveSubsystem)
 		);
 		
 		putSendable("Auton Chooser", autonChooser);
